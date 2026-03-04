@@ -265,3 +265,20 @@ This file tracks learnings across iterations.
   - 148 total tests pass across the project in ~29s
   - Phase 4 (OCR Module) is now complete — next is Phase 5: Field Extraction (NER)
 ---
+
+## Iteration 19 - Task 5.1: Create NER label definitions
+- Created `edge_model/extraction/labels.py` with:
+  - ARZTBESUCH_LABELS (14 tags), REISEKOSTEN_LABELS (15 tags), LIEFERSCHEIN_LABELS (17 tags)
+  - LABEL_SETS dict mapping document_type strings to label lists
+  - get_label2id() and get_id2label() helper functions
+- Created `tests/unit/test_labels.py` with 30 tests across 5 classes:
+  - TestLabelListsStartWithO: all lists start with "O"
+  - TestBIOTagPairing: I- tags have matching B- tags, specific paired tags verified
+  - TestLabel2IdAndId2Label: inverse mapping, length, O=0
+  - TestLabelSets: all 3 doc types present, correct references
+  - TestLabelUniqueness: no duplicates, valid BIO format
+- Files changed: edge_model/extraction/labels.py, tests/unit/test_labels.py, PRD.md
+- Learnings for future iterations:
+  - ruff E741 still catches `l` variable name — use `lbl` instead
+  - Phase 5 started — next is Task 5.2 (NER dataset and config)
+---

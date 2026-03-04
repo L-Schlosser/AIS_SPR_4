@@ -481,7 +481,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 5: Field Extraction (NER)
 
-- [ ] **Task 5.1: Create NER label definitions**
+- [x] **Task 5.1: Create NER label definitions**
   Create `edge_model/extraction/labels.py`:
   - `ARZTBESUCH_LABELS`: list of BIO tags = ["O", "B-PATIENT", "I-PATIENT", "B-DOCTOR", "I-DOCTOR", "B-FACILITY", "I-FACILITY", "B-ADDRESS", "I-ADDRESS", "B-DATE", "I-DATE", "B-TIME", "I-TIME", "B-DURATION"]
   - `REISEKOSTEN_LABELS`: ["O", "B-VENDOR", "I-VENDOR", "B-VADDRESS", "I-VADDRESS", "B-DATE", "I-DATE", "B-AMOUNT", "B-CURRENCY", "B-VAT_RATE", "B-VAT_AMOUNT", "B-CATEGORY", "B-DESC", "I-DESC", "B-RECEIPT_NUM"]
