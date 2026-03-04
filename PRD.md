@@ -136,7 +136,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
   Use existing code: edge_model/classification/validate.py for classifier validation patterns.
   Use sklearn.metrics for classification_report, confusion_matrix.
 
-- [ ] **Task 5.2: Build Models & Metrics page**
+- [x] **Task 5.2: Build Models & Metrics page**
   In `demo/pages/3_Models_and_Metrics.py`, create:
   - Load metrics from `demo/metrics/*.json` (generate if missing by showing st.warning + instructions)
   - Section "Classification Performance":

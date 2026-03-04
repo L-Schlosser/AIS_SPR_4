@@ -719,6 +719,21 @@ This file tracks learnings across iterations.
   - Ruff clean, 333 tests pass
 ---
 
+## Iteration 44 - Task 5.2 (Demo): Build Models & Metrics page
+- Built full Models & Metrics page with 3 sections:
+  - Classification Performance: overall accuracy metric, plotly confusion matrix heatmap, grouped bar chart for per-class precision/recall/F1
+  - NER Extraction Performance: micro F1 bar chart per doc type, expandable entity-level breakdown tables
+  - Model Sizes: uses ModelManager to get actual sizes, horizontal bar chart, total size metric, fallback static table on error
+- Loads metrics from demo/metrics/*.json, shows st.warning if files missing
+- Files changed: demo/pages/3_Models_and_Metrics.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - plotly go.Heatmap with texttemplate="%{z}" shows values directly on cells
+  - px.bar with orientation="h" for horizontal bar charts
+  - yaxis range=[0.9, 1.005] zooms in on high-performing metrics for better visual differentiation
+  - ModelManager("edge_model") scans for ONNX files and reports actual sizes
+  - Ruff clean, 333 tests pass
+---
+
 ## Iteration 43 - Task 5.1 (Demo): Create metrics generation script
 - Created `demo/generate_metrics.py` that evaluates both classifier and NER models
 - Classifier: runs ONNX inference on 750 sample images, uses sklearn classification_report and confusion_matrix
