@@ -773,7 +773,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 10: Training Execution
 
-- [ ] **Task 10.1: Generate all training data**
+- [x] **Task 10.1: Generate all training data**
   Run the data generation scripts:
   ```bash
   uv run python scripts/generate_samples.py --count 250 --output-dir data/samples

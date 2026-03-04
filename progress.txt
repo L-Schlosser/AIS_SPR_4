@@ -495,3 +495,36 @@ This file tracks learnings across iterations.
   - SchemaValidator() can be used inline in integration tests to validate postprocessed output
   - 345 total tests pass across the project in ~80s, 13 skipped (model-dependent)
 ---
+
+## Iteration 30 - Task 9.2: Create end-to-end tests
+- Created `tests/e2e/test_full_pipeline.py` with 5 e2e tests:
+  - TestArztbesuchE2E: generate image → process → validate schema
+  - TestReisekostenE2E: same for reisekostenbeleg
+  - TestLieferscheinE2E: same for lieferschein
+  - TestUnknownImage: random noise image → expect low confidence or valid type
+  - TestPipelineTiming: assert processing time < 2000ms on CPU
+- Created `tests/e2e/test_all_document_types.py` with 9 parametrized tests (3 doc types × 3 tests):
+  - test_batch_classification_accuracy: 5 variant images per type, >80% correctly classified
+  - test_batch_produces_fields: check that processed images produce extracted fields
+  - test_batch_schema_validation: validate extracted fields against JSON schemas
+- All tests marked with @pytest.mark.e2e, skip gracefully when models not available
+- Files changed: tests/e2e/test_full_pipeline.py, tests/e2e/test_all_document_types.py, PRD.md
+- Learnings for future iterations:
+  - Same `_all_models_available()` pattern as integration tests — checks classifier + all 3 extractors
+  - `_generate_variant_image()` with seed-based RNG creates reproducible but varied test images
+  - Clean internal keys (prefixed with `_`) before schema validation
+  - 345 tests pass, 27 skipped (14 e2e + 13 integration model-dependent)
+  - Phase 9 (Integration & E2E Tests) is now complete — next is Phase 10 (Training Execution)
+---
+
+## Iteration 31 - Task 10.1: Generate all training data
+- Ran `scripts/generate_samples.py --count 250` → 750 images + 750 label files (250 per doc type)
+- Ran `scripts/generate_text_samples.py --count 1500` → 4500 NER samples (1200 train + 300 val per doc type)
+- Verified file counts: 250 PNG + 250 JSON per type, 6 JSONL files (train + val × 3 types)
+- Files changed: PRD.md, progress.txt (data files gitignored)
+- Learnings for future iterations:
+  - Data generation is fast (~seconds for images, instant for text)
+  - Generated data is gitignored — must regenerate on fresh clone
+  - Next task (10.2) trains the classifier on these 750 images
+  - 345 tests pass, 27 skipped (model-dependent)
+---
