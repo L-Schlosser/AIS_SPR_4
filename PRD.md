@@ -676,7 +676,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 7: API Service Layer
 
-- [ ] **Task 7.1: Create document service**
+- [x] **Task 7.1: Create document service**
   Create `api/service.py`:
   - `class DocumentService`:
     - `__init__(self, config_path: str = "config.yaml")`:

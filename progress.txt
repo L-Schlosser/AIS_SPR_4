@@ -427,3 +427,25 @@ This file tracks learnings across iterations.
   - Phase 6 (Inference Pipeline) is now complete — all classifier, extractor, and pipeline orchestrator done
   - 309 total tests pass across the project in ~78s
 ---
+
+## Iteration 27 - Task 7.1: Create document service
+- Created `api/service.py` with DocumentService class:
+  - `__init__()`: loads YAML config, creates DocumentPipeline and SchemaValidator
+  - `process_image()`: decodes JPEG/PNG bytes via PIL, converts to numpy, runs pipeline
+  - `process_image_file()`: delegates to pipeline.process_file()
+  - `get_supported_types()`: returns all DocumentType enum values as strings
+  - `get_schema()`: delegates to SchemaValidator.get_schema()
+- Created `config.yaml` at project root with model paths for classifier + 3 extractors
+- Created `tests/unit/test_service.py` with 11 tests across 5 classes:
+  - TestServiceInitialization (2): config loading, default path
+  - TestProcessImage (3): PNG bytes, JPEG bytes, invalid bytes raises ValueError
+  - TestProcessImageFile (1): delegates to pipeline
+  - TestGetSupportedTypes (2): all 3 types, list of strings
+  - TestGetSchema (3): valid schema, unknown type raises, all types delegate
+- Files changed: api/service.py, config.yaml, tests/unit/test_service.py, PRD.md
+- Learnings for future iterations:
+  - object.__new__(Class) pattern reused for service tests — consistent with pipeline tests
+  - ruff auto-fix handles import sorting in tests with inline imports (io, PIL)
+  - Phase 7 (API Service Layer) is now complete
+  - 320 total tests pass across the project in ~77s
+---
