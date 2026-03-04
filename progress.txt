@@ -449,3 +449,33 @@ This file tracks learnings across iterations.
   - Phase 7 (API Service Layer) is now complete
   - 320 total tests pass across the project in ~77s
 ---
+
+## Iteration 28 - Task 8.1: Create CLI demo application
+- Created `mobile_app/src/model_manager.py` with ModelManager class:
+  - `get_model_info()`: scans for all 4 required ONNX models, returns ModelInfo with name/path/size/exists
+  - `check_models_exist()`: returns (all_present, missing_names) tuple
+  - `get_total_size_mb()`: sums sizes of existing models
+  - REQUIRED_MODELS list defines classifier + 3 extractor model paths
+- Created `mobile_app/src/app.py` with CLI demo:
+  - `process` command: process single image, pretty-print JSON result
+  - `info` command: show model status, sizes, supported types via ModelManager
+  - `batch` command: process all images in a directory, optional JSON output
+  - `demo` command: generates sample images via generate_samples, processes with pipeline
+  - ANSI color output for confidence levels (green/yellow/red)
+  - Lazy imports of heavy modules (api.service, scripts.generate_samples) inside commands
+- Created `mobile_app/README.md` with:
+  - Quick start CLI examples, command reference table
+  - Model size overview, ONNX Runtime Mobile integration for Android (Kotlin) and iOS (Swift)
+  - API reference for DocumentService
+- Created `tests/unit/test_mobile_app.py` with 18 tests across 4 classes:
+  - TestModelManagerCheckModelsExist (3): empty dir, all present, partial
+  - TestModelManagerGetModelInfo (4): all required, structure, existing size, missing size
+  - TestModelManagerTotalSize (2): zero when empty, sums existing
+  - TestAppCLIParsing (9): all 4 commands, defaults, custom args, no command
+- Files changed: mobile_app/src/model_manager.py, mobile_app/src/app.py, mobile_app/README.md, tests/unit/test_mobile_app.py, PRD.md
+- Learnings for future iterations:
+  - Lazy imports inside command handlers keep startup fast and avoid import errors when optional deps missing
+  - object pattern from pipeline/service tests not needed here — ModelManager has no heavy deps
+  - Phase 8 (Mobile Demo App) is now complete
+  - 338 total tests pass across the project in ~556s (full suite including training tests)
+---

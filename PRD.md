@@ -715,7 +715,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 8: Mobile Demo App
 
-- [ ] **Task 8.1: Create CLI demo application**
+- [x] **Task 8.1: Create CLI demo application**
   Create `mobile_app/src/model_manager.py`:
   - `class ModelManager`:
     - `__init__(self, models_dir: str)`:
