@@ -852,7 +852,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: ALL tests pass. Ruff reports no errors. Demo app produces valid JSON output for all document types.
 
-- [ ] **Task 11.3: Create comprehensive README.md**
+- [x] **Task 11.3: Create comprehensive README.md**
   Create/update `README.md` at project root with:
   - Project title and description
   - Architecture overview diagram (Mermaid)
