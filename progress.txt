@@ -771,3 +771,16 @@ This file tracks learnings across iterations.
   - Fixed footer uses position:fixed with z-index to stay above content
   - All 333 unit tests pass, ruff clean
 ---
+
+## Iteration 47 - Task 7.2 (Demo): Run full test suite and verify demo
+- Ran `uv run ruff check .` — all checks passed (clean)
+- Ran `uv run pytest tests/ -v --tb=short` — all 372 tests pass, 39 warnings (deprecation only)
+- Ran `uv run streamlit run demo/Home.py --server.headless true` — starts successfully on localhost:8503
+- Verified all 7 demo Python files compile without syntax errors (py_compile check)
+- No fixes needed — everything passed on first try
+- Files changed: PRD.md, progress.txt
+- Learnings for future iterations:
+  - All demo PRD tasks complete — project demo is fully built and verified
+  - 372 total tests (333 unit + 25 integration + 14 e2e) all pass
+  - Demo app has 5 pages: Home, Live Demo, Architecture, Models & Metrics, About
+---

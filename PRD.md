@@ -186,7 +186,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
   Run `uv run ruff check .` and fix any lint issues.
   Run `uv run pytest tests/unit/ -x` to make sure existing tests still pass.
 
-- [ ] **Task 7.2: Run full test suite and verify demo**
+- [x] **Task 7.2: Run full test suite and verify demo**
   Run: `uv run pytest tests/ -v --tb=short` — all 372 tests must pass.
   Run: `uv run ruff check .` — must be clean.
   Run: `uv run streamlit run demo/Home.py --server.headless true` — must start without errors.
