@@ -42,3 +42,14 @@ This file tracks learnings across iterations.
   - Schema uses `const` for document_type, `pattern` for dates/times, `additionalProperties: false`
   - No tests to run yet for Phase 1 schemas (tests come in Task 1.4+)
 ---
+
+## Iteration 6 - Task 1.2: Create Reisekostenbeleg JSON schema
+- Created `data/schemas/reisekostenbeleg.json` with Draft-07 schema
+- Required fields: document_type, vendor_name, date, amount, currency
+- Optional fields: vendor_address, vat_rate, vat_amount, category, description, receipt_number, confidence
+- Uses `exclusiveMinimum: 0` for amount, `enum: ["EUR"]` for currency, category enum for expense types
+- Files changed: data/schemas/reisekostenbeleg.json
+- Learnings for future iterations:
+  - Same pattern as arztbesuchsbestaetigung schema - const for doc type, pattern for dates
+  - Austrian VAT rates (10%, 13%, 20%) referenced in PRD but schema allows 0-100 range
+---

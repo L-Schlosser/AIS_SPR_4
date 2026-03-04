@@ -185,7 +185,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: `uv run python -c "import json, jsonschema; s=json.load(open('data/schemas/arztbesuchsbestaetigung.json')); jsonschema.Draft7Validator.check_schema(s); print('valid')"` prints "valid".
 
-- [ ] **Task 1.2: Create Reisekostenbeleg JSON schema**
+- [x] **Task 1.2: Create Reisekostenbeleg JSON schema**
   Create `data/schemas/reisekostenbeleg.json`:
   ```json
   {
