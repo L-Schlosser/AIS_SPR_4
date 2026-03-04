@@ -640,7 +640,7 @@ All models ONNX-exported with INT8 quantization.
   - Test that postprocessing is applied correctly
   **Validation**: `uv run pytest tests/unit/test_extractor_inference.py -v` — all pass.
 
-- [ ] **Task 6.3: Create main pipeline orchestrator**
+- [x] **Task 6.3: Create main pipeline orchestrator**
   Create `edge_model/inference/config.py`:
   - `@dataclass PipelineConfig`:
     - classifier_model_path: str

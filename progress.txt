@@ -402,3 +402,28 @@ This file tracks learnings across iterations.
   - 292 total tests pass across the project in ~78s
   - Next is Task 6.3 (main pipeline orchestrator)
 ---
+
+## Iteration 26 - Task 6.3: Create main pipeline orchestrator
+- Created `edge_model/inference/config.py` with:
+  - PipelineConfig dataclass: classifier_model_path, extractor_model/tokenizer_paths, schemas_dir, confidence_threshold, use_ocr
+  - load_config(): loads YAML file into PipelineConfig with defaults for missing keys
+- Created `edge_model/inference/pipeline.py` with DocumentPipeline class:
+  - __init__: initializes ClassifierInference, per-doc-type ExtractorInference instances, SchemaValidator, optional OCREngine
+  - process(): classify → confidence check → OCR → extract → validate → ProcessingResult
+  - process_file(): loads image from file path then calls process()
+  - from_config(): class method to create pipeline from YAML config file
+- Created `tests/unit/test_pipeline.py` with 17 tests across 6 classes:
+  - TestPipelineConfig (2): defaults, custom values
+  - TestLoadConfig (4): valid YAML, missing file, non-mapping, partial with defaults
+  - TestPipelineInitialization (2): all components created, no OCR when disabled
+  - TestPipelineProcess (7): full flow, low confidence, correct extractor, validation errors, no OCR, empty text, classifier called
+  - TestPipelineProcessFile (1): loads and processes image file
+  - TestPipelineFromConfig (1): loads YAML and creates pipeline
+- Files changed: edge_model/inference/config.py, edge_model/inference/pipeline.py, tests/unit/test_pipeline.py, PRD.md
+- Learnings for future iterations:
+  - OCREngine is lazily imported inside __init__ (not at module level) — must patch "ocr.engine.OCREngine" not "edge_model.inference.pipeline.OCREngine"
+  - object.__new__(Class) bypasses __init__ for creating test instances with fully mocked internals
+  - PyYAML is already available in the environment (6.0.3)
+  - Phase 6 (Inference Pipeline) is now complete — all classifier, extractor, and pipeline orchestrator done
+  - 309 total tests pass across the project in ~78s
+---
