@@ -470,7 +470,7 @@ All models ONNX-exported with INT8 quantization.
   - Mock RapidOCR for unit tests (don't require actual OCR model)
   **Validation**: `uv run pytest tests/unit/test_ocr.py -v` — all pass.
 
-- [ ] **Task 4.2: Create OCR integration test**
+- [x] **Task 4.2: Create OCR integration test**
   Create `tests/integration/test_ocr_engine.py`:
   - Generate a simple test image with known text using Pillow (draw "Hello World 123" on white background)
   - Run OCR engine on it

@@ -248,3 +248,20 @@ This file tracks learnings across iterations.
   - Mock OCREngine by using `__new__` to bypass __init__, then set `_ocr` attribute to MagicMock
   - 143 total tests pass across the project in ~22s
 ---
+
+## Iteration 18 - Task 4.2: Create OCR integration test
+- Created `tests/integration/test_ocr_engine.py` with 5 integration tests:
+  - test_extract_known_text: generates "Hello World 123" image, asserts OCR finds "hello" and "123"
+  - test_processing_time_is_measured: verifies positive processing time
+  - test_regions_have_bounding_boxes: validates bbox coordinates and confidence
+  - test_extract_text_from_file: tests file-based OCR input
+  - test_empty_image_returns_empty_text: blank image returns minimal regions
+- All tests marked with @pytest.mark.integration
+- Files changed: tests/integration/test_ocr_engine.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - RapidOCR works well on clean synthetic images — reliably extracts "Hello World 123"
+  - Font fallback (arial → DejaVuSans → default) needed for cross-platform compatibility
+  - OCR integration tests take ~26s due to model loading — significantly slower than unit tests
+  - 148 total tests pass across the project in ~29s
+  - Phase 4 (OCR Module) is now complete — next is Phase 5: Field Extraction (NER)
+---
