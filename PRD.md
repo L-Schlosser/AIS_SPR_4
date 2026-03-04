@@ -110,7 +110,7 @@ All models ONNX-exported with INT8 quantization.
   Each `__init__.py` can be empty or contain a module docstring.
   **Validation**: `uv run python -c "import edge_model; import ocr; import api"` succeeds.
 
-- [ ] **Task 0.3: Create .gitignore**
+- [x] **Task 0.3: Create .gitignore**
   Create `.gitignore` at project root:
   ```
   __pycache__/

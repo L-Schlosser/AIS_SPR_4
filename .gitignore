@@ -1,0 +1,34 @@
+__pycache__/
+*.pyc
+.venv/
+.python-version
+*.egg-info/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Model artifacts
+*.onnx
+*.pt
+*.pth
+*.bin
+*.ort
+edge_model/classification/models/
+edge_model/extraction/models/
+
+# Data (keep schemas)
+data/samples/**/*.png
+data/samples/**/*.jpg
+data/samples/**/*.jpeg
+data/samples/**/*.jsonl
+!data/schemas/*.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
