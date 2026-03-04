@@ -66,3 +66,31 @@ This file tracks learnings across iterations.
   - Lieferschein schema is the most complex with nested objects and arrays
   - Next task (1.4) creates Pydantic models + first real tests
 ---
+
+## Iteration 8 - Task 1.4: Create Pydantic models and DocumentType enum
+- Created `api/models.py` with DocumentType enum, 3 document result models, SenderRecipient, DeliveryItem, ProcessingResult
+- Created `tests/unit/test_models.py` with 28 tests covering valid/invalid data, missing fields, extra fields, enum values
+- Files changed: api/models.py, tests/unit/test_models.py, PRD.md
+- Learnings for future iterations:
+  - Pydantic v2 uses `model_config = {"extra": "forbid"}` (not Config inner class)
+  - Use `pattern` in Field() for string validation (dates, times, document_type constants)
+  - ruff requires imports sorted: third-party (pytest, pydantic) before local (api.models) with blank line separator
+  - All 28 tests pass in 0.27s
+---
+
+## Iteration 9 - Task 1.5: Create schema validation utility
+- Created `edge_model/inference/validator.py` with SchemaValidator class
+  - `validate(data, document_type)` returns (is_valid, error_messages)
+  - `get_schema(document_type)` returns raw schema dict or raises ValueError
+  - Loads schemas from data/schemas/ directory at init time
+- Created `tests/unit/test_validator.py` with 18 tests covering:
+  - Schema loading (all 3 types, empty dir, nonexistent dir, custom schema)
+  - Valid data for all 3 document types including optional fields
+  - Invalid data: missing fields, wrong types, extra fields, bad dates, bad amounts
+  - Wrong document type handling
+- Files changed: edge_model/inference/validator.py, tests/unit/test_validator.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - jsonschema.Draft7Validator.iter_errors() is better than validate() for collecting all errors
+  - SchemaValidator will be used by the pipeline (Task 6.3) and service (Task 7.1)
+  - Phase 1 is now complete - all schemas, Pydantic models, and validation utility done
+---

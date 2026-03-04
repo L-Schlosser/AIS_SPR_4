@@ -282,7 +282,7 @@ All models ONNX-exported with INT8 quantization.
   - Test that extra fields are rejected
   **Validation**: `uv run pytest tests/unit/test_models.py -v` — all tests pass.
 
-- [ ] **Task 1.5: Create schema validation utility**
+- [x] **Task 1.5: Create schema validation utility**
   Create `edge_model/inference/validator.py`:
   - `SchemaValidator` class that loads JSON schemas from `data/schemas/` directory
   - `validate(data: dict, document_type: str) -> tuple[bool, list[str]]` — validates data against the matching schema, returns (is_valid, error_messages)
