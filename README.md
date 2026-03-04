@@ -134,14 +134,15 @@ All outputs are validated against the schemas defined in `data/schemas/`.
 
 ---
 
-## 8. Intended Users and Roles
+## 8. Intended Roles
 
-| Role                       | Responsibility                     |
-| -------------------------- | ---------------------------------- |
-| Machine Learning Engineers | Model development and optimization |
-| Mobile Developers          | Client-side integration            |
-| OCR Developers             | Text recognition module            |
-| Quality Assurance          | Testing and evaluation             |
+| Contibuter                 | Role                       | Responsibility                     |
+| -------------------------- | -------------------------- | ---------------------------------- |
+| Celina Binder              |                            |                                    |
+| Eichsteininger Natalie     |                            |                                    |
+| Hysenlli Klevi             |                            |                                    |
+| Schlosser Lorenz Johannes  |                            |                                    |
+| Suchomel Raphael           |                            |                                    |
 
 ---
 
@@ -153,8 +154,240 @@ All outputs are validated against the schemas defined in `data/schemas/`.
 * Full OCR integration
 * Incremental model updates
 
+
 ---
 
 ## 10. License
 
 This project is intended for research and educational purposes.
+
+
+
+
+
+
+
+
+# Setup & Contribution Guide
+
+## Contributors
+
+* **Binder Celina Anna**
+* **Eichsteininger Natalie**
+* **Hysenlli Klevi**
+* **Schlosser Lorenz Johannes**
+* **Suchomel Raphael**
+
+This guide explains how to set up the project, manage dependencies, and contribute in a structured way.
+
+---
+
+# Setup Instructions
+
+## Clone the repository
+
+```bash
+git clone https://github.com/L-Schlosser/AIS_SPR_4.git
+cd AIS_SPR_4
+```
+
+---
+
+## Project Dependencies & Environment Setup
+
+This project uses **uv + pyproject.toml** for dependency management. Dependency groups allow installing only the components you need:
+
+* **Base dependencies**: core functionality and scripts
+* **OCR module**: Optical Character Recognition for document processing
+* **Visualization tools**: plotting and analysis tools
+
+This keeps environments **clean, conflict-free, and fast**, and simplifies collaboration.
+
+---
+
+### Installing Dependencies
+
+**Base dependencies (recommended for general users):**
+
+```bash
+uv sync
+```
+
+**OCR module:**
+
+```bash
+uv sync --group ocr
+```
+
+**Visualization tools:**
+
+```bash
+uv sync --group viz
+```
+
+**Multiple groups at once:**
+
+```bash
+uv sync --group ocr --group viz
+```
+
+**All groups (use only if necessary):**
+
+```bash
+uv sync --all-groups
+```
+
+---
+
+### Adding New Dependencies
+
+Dependencies are tracked in **pyproject.toml**.
+
+* Add a package to **base dependencies**:
+
+```bash
+uv add PACKAGE
+```
+
+* Add a package to a **specific group**:
+
+```bash
+uv add PACKAGE --group ocr
+uv add PACKAGE --group viz
+```
+
+---
+
+### Checking Installed Packages
+
+* List all installed packages:
+
+```bash
+uv pip list
+```
+
+* View available dependency groups:
+
+```bash
+uv tree
+```
+
+---
+
+### Python File Guidelines
+
+* All Python code **must use `.py` files**
+* Filenames should be **lowercase and descriptive**, e.g.:
+
+```text
+document_classifier.py
+ocr_pipeline.py
+data_loader.py
+```
+
+---
+
+### Summary Table
+
+| Task                        | Command                                 |
+| --------------------------- | --------------------------------------- |
+| Install base deps           | `uv sync`                               |
+| Install OCR module          | `uv sync --group ocr`                   |
+| Install visualization tools | `uv sync --group viz`                   |
+| Install multiple groups     | `uv sync --group GROUP1 --group GROUP2` |
+| Add package to base         | `uv add PACKAGE`                        |
+| Add package to group        | `uv add PACKAGE --group GROUPNAME`      |
+| List installed packages     | `uv pip list`                           |
+| Show available groups       | `uv tree`                               |
+
+> Python 3.12.11 is recommended for this project to ensure compatibility with all dependencies.
+
+---
+
+# Branch Instructions
+
+### Check current branch
+
+```bash
+git branch
+```
+
+If not on **main**, switch:
+
+```bash
+git checkout main
+```
+
+---
+
+### Pull the latest changes from origin
+
+```bash
+git pull origin main
+```
+
+---
+
+### Create a new feature branch
+
+```bash
+git checkout -b <feature-name>
+```
+
+**Branch naming convention:**
+`[FirstLetterOfFirstName][FirstLetterOfLastName]-[feature_added]`
+
+Example:
+
+```text
+CB-preprocessing
+AS-visualizations
+```
+
+---
+
+### First push of a new branch
+
+```bash
+git push -u origin <feature-name>
+```
+
+> Required only for the first push of a branch.
+
+---
+
+### Subsequent pushes
+
+```bash
+git add .
+git commit -m "message_in_lowercase_with_underscores"
+git push
+```
+
+> **Commit messages** must be lowercase with underscores, e.g.:
+> `add_document_classifier`
+> `update_ocr_pipeline`
+
+---
+
+### Merging
+
+1. Go to GitHub → **Pull Requests** → **New Pull Request**
+2. Set:
+
+```text
+base: main <- compare: <your-feature-branch>
+```
+
+3. Review and resolve conflicts if necessary.
+
+---
+
+### Switching back to main
+
+```bash
+git fetch
+git pull
+git checkout main
+git pull origin main
+```
