@@ -160,7 +160,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 1: JSON Schemas and Data Models
 
-- [ ] **Task 1.1: Create Arztbesuchsbestätigung JSON schema**
+- [x] **Task 1.1: Create Arztbesuchsbestätigung JSON schema**
   Create `data/schemas/arztbesuchsbestaetigung.json`:
   ```json
   {

@@ -31,3 +31,14 @@ This file tracks learnings across iterations.
   - ruff check passes on all existing files
   - git warnings about LF→CRLF are normal on Windows
 ---
+
+## Iteration 5 - Task 1.1: Create Arztbesuchsbestätigung JSON schema
+- Created `data/schemas/arztbesuchsbestaetigung.json` with Draft-07 schema
+- All required fields: document_type, patient_name, doctor_name, facility_name, visit_date
+- Optional fields: facility_address, visit_time, duration_minutes, confidence
+- Files changed: data/schemas/arztbesuchsbestaetigung.json
+- Learnings for future iterations:
+  - jsonschema.Draft7Validator.check_schema() validates the schema structure itself
+  - Schema uses `const` for document_type, `pattern` for dates/times, `additionalProperties: false`
+  - No tests to run yet for Phase 1 schemas (tests come in Task 1.4+)
+---
