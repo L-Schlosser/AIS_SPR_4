@@ -528,3 +528,18 @@ This file tracks learnings across iterations.
   - Next task (10.2) trains the classifier on these 750 images
   - 345 tests pass, 27 skipped (model-dependent)
 ---
+
+## Iteration 32 - Task 10.2: Train classification model
+- Ran `uv run python -m edge_model.classification.train --data-dir data/samples --output-dir edge_model/classification/models`
+- Training: 5 epochs frozen backbone + 10 epochs full fine-tuning on CPU
+- Best validation accuracy: 88.67% (exceeds 85% threshold)
+- Per-class metrics: Class 0 (arztbesuch) P=0.84/R=0.96, Class 1 (reisekosten) P=1.00/R=0.78, Class 2 (lieferschein) P=0.85/R=0.92
+- Output files: best_model.pt (13.1MB), metrics.json
+- Files changed: PRD.md, progress.txt (model files gitignored)
+- Learnings for future iterations:
+  - Training on CPU takes ~3-4 minutes for 750 images (250 per class)
+  - Frozen backbone phase barely improves on random (30-44%) — most learning happens in full fine-tuning phase
+  - Model size ~13MB as PyTorch state dict — will shrink significantly after ONNX + INT8 quantization
+  - Next task (10.3) exports this model to ONNX format
+  - 345 tests pass, 27 skipped (model-dependent)
+---

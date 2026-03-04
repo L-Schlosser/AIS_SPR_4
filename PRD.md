@@ -785,7 +785,7 @@ All models ONNX-exported with INT8 quantization.
   - `data/samples/lieferschein/` has 250 PNG + 250 JSON files
   - 6 JSONL files exist (train + val for each type)
 
-- [ ] **Task 10.2: Train classification model**
+- [x] **Task 10.2: Train classification model**
   Run: `uv sync --group train`
   Execute:
   ```bash
