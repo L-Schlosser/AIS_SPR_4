@@ -222,3 +222,29 @@ This file tracks learnings across iterations.
   - Phase 3 (Document Classification) is now complete
   - 117 total tests pass across the project in ~13s
 ---
+
+## Iteration 17 - Task 4.1: Create OCR engine
+- Created `ocr/engine.py` with OCREngine class wrapping RapidOCR:
+  - `extract_text(image)` runs OCR and returns structured OCRResult with text, regions, processing_time_ms
+  - `extract_text_from_file(file_path)` loads image then runs OCR
+  - Converts RapidOCR polygon points to bounding box (x_min, y_min, x_max, y_max)
+- Created `ocr/preprocessing.py` with image preprocessing:
+  - `preprocess_for_ocr()`: grayscale conversion, sharpening, adaptive thresholding
+  - `_adaptive_threshold()`: local mean-based adaptive threshold using PIL BoxBlur
+- Created `ocr/postprocessing.py` with text region utilities:
+  - `sort_regions_by_position()`: groups regions into lines by y-coordinate tolerance, sorts left-to-right within lines
+  - `merge_text()`: combines sorted regions with spaces (same line) or newlines (different lines)
+- Created `tests/unit/test_ocr.py` with 26 tests across 5 test classes:
+  - TestPreprocessing (6): color/grayscale conversion, binary output, dimensions, dtype
+  - TestSortRegionsByPosition (5): empty, single, top-to-bottom, left-to-right, multiline
+  - TestMergeText (5): empty, single, same-line, different lines, readable output
+  - TestOCREngine (7): init, extract with mock, empty results, multiple regions, file loading, bbox conversion, timing
+  - TestDataClasses (3): TextRegion, OCRResult defaults and with regions
+- Files changed: ocr/engine.py, ocr/preprocessing.py, ocr/postprocessing.py, tests/unit/test_ocr.py, PRD.md
+- Learnings for future iterations:
+  - `uv sync --group ocr` uninstalls train group packages — always sync all needed groups: `uv sync --group dev --group ocr --group train`
+  - RapidOCR returns tuple of (detections_list, elapsed_time) — detections are [polygon_points, text, confidence]
+  - ruff N814: don't alias CamelCase imports as _CONSTANT (e.g., `ImageFilter as _IF`)
+  - Mock OCREngine by using `__new__` to bypass __init__, then set `_ocr` attribute to MagicMock
+  - 143 total tests pass across the project in ~22s
+---

@@ -440,7 +440,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 4: OCR Module
 
-- [ ] **Task 4.1: Create OCR engine**
+- [x] **Task 4.1: Create OCR engine**
   Run: `uv sync --group ocr`
   Create `ocr/engine.py`:
   - `class OCREngine`:
