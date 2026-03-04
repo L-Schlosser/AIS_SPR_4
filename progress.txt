@@ -1,2 +1,13 @@
 # Progress Log
 This file tracks learnings across iterations.
+
+## Iteration 1 - Task 0.1: Create pyproject.toml
+- Created pyproject.toml with all dependency groups (train, ocr, viz, dev)
+- Ran `uv sync --group dev` successfully
+- Files changed: pyproject.toml
+- Learnings for future iterations:
+  - uv resolved 113 packages, installed 26 for base + dev
+  - onnxruntime 1.24.2 installed successfully
+  - Python 3.12.11 used
+  - `.venv` created automatically by uv
+---

@@ -25,7 +25,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 0: Project Scaffolding
 
-- [ ] **Task 0.1: Create pyproject.toml**
+- [x] **Task 0.1: Create pyproject.toml**
   Create `pyproject.toml` at project root with:
   ```toml
   [project]
