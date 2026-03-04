@@ -669,3 +669,15 @@ This file tracks learnings across iterations.
   - plotly resolved to v6.6.0 (above minimum 5.18.0)
   - transformers resolved to v4.57.6
 ---
+
+## Iteration 39 - Task 1.2 (Demo): Create demo directory structure
+- Directory structure already existed from prior work; fixed E402 lint errors in all page files
+- Reordered imports: `import streamlit as st` moved above `setup_page()` call
+- `demo/utils.py` has `setup_page(title, icon)` helper calling `st.set_page_config()`
+- All 6 files: Home.py, utils.py, pages/{1_Live_Demo,2_Architecture,3_Models_and_Metrics,4_About}.py
+- Verified: Streamlit starts on localhost:8502, ruff clean, 333 tests pass
+- Learnings for future iterations:
+  - `st.set_page_config()` must be first Streamlit command but `import streamlit` can come before it
+  - Ruff E402 fires if imports come after function calls at module level — keep all imports at top
+  - Streamlit multi-page app: pages/ directory files auto-appear in sidebar navigation
+---

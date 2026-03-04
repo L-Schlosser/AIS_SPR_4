@@ -50,7 +50,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
   Delete the old `demo_app.py` file from the project root (it's broken/replaced).
   Verify: `uv run python -c "import streamlit; import plotly; print('OK')"` succeeds.
 
-- [ ] **Task 1.2: Create demo directory structure**
+- [x] **Task 1.2: Create demo directory structure**
   Create the Streamlit multi-page app structure:
   ```
   demo/
