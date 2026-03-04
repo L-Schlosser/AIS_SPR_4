@@ -68,7 +68,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 2: Home Page
 
-- [ ] **Task 2.1: Build Home page**
+- [x] **Task 2.1: Build Home page**
   In `demo/Home.py`, create:
   - Page title: "Edge-AI Document Processing for BMD Go"
   - Subtitle: "On-device document classification and field extraction pipeline"

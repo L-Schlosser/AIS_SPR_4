@@ -681,3 +681,13 @@ This file tracks learnings across iterations.
   - Ruff E402 fires if imports come after function calls at module level — keep all imports at top
   - Streamlit multi-page app: pages/ directory files auto-appear in sidebar navigation
 ---
+
+## Iteration 40 - Task 2.1 (Demo): Build Home page
+- Built full Home page with: title, subtitle, 3 metric columns, graphviz pipeline diagram, document types table, sidebar with navigation info and "How to Run" section
+- Files changed: demo/Home.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - st.graphviz_chart accepts DOT strings directly — use rankdir=LR for horizontal flow
+  - st.table works well for static data passed as a dict of lists
+  - st.sidebar context manager (`with st.sidebar:`) is cleanest for sidebar content
+  - Ruff clean, 333 tests pass
+---
