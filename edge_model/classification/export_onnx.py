@@ -59,7 +59,10 @@ def export_to_onnx(model_path: str, output_path: str, config: ClassificationConf
 
 
 def quantize_model(onnx_path: str, output_path: str) -> str:
-    """Apply INT8 dynamic quantization to an ONNX model.
+    """Apply float16 quantization to an ONNX model.
+
+    Uses float16 conversion which preserves accuracy much better than INT8 dynamic
+    quantization for convolution-heavy architectures like EfficientNet.
 
     Args:
         onnx_path: Path to the input ONNX model.
@@ -68,16 +71,14 @@ def quantize_model(onnx_path: str, output_path: str) -> str:
     Returns:
         Path to the quantized ONNX file.
     """
-    from onnxruntime.quantization import QuantType, quantize_dynamic
+    from onnxruntime.transformers import float16
 
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    quantize_dynamic(
-        onnx_path,
-        str(output_file),
-        weight_type=QuantType.QInt8,
-    )
+    model = onnx.load(onnx_path)
+    model_fp16 = float16.convert_float_to_float16(model, keep_io_types=True)
+    onnx.save(model_fp16, str(output_file))
 
     original_size = Path(onnx_path).stat().st_size / (1024 * 1024)
     quantized_size = output_file.stat().st_size / (1024 * 1024)

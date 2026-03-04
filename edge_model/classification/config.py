@@ -16,5 +16,5 @@ class ClassificationConfig:
     epochs_unfrozen: int = 10
     model_name: str = "tf_efficientnet_lite0"
     class_names: list[str] = field(
-        default_factory=lambda: ["arztbesuchsbestaetigung", "reisekostenbeleg", "lieferschein"]
+        default_factory=lambda: ["arztbesuchsbestaetigung", "lieferschein", "reisekostenbeleg"]
     )

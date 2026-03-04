@@ -543,3 +543,20 @@ This file tracks learnings across iterations.
   - Next task (10.3) exports this model to ONNX format
   - 345 tests pass, 27 skipped (model-dependent)
 ---
+
+## Iteration 33 - Task 10.3: Export classifier to ONNX
+- Exported trained classifier to ONNX format (classifier.onnx: 12.90 MB)
+- Used float16 conversion instead of INT8 dynamic quantization (classifier_int8.onnx: 6.54 MB)
+- Fixed critical class ordering bug: ClassificationConfig.class_names was ["arztbesuchsbestaetigung", "reisekostenbeleg", "lieferschein"] but DocumentDataset sorts directories alphabetically giving ["arztbesuchsbestaetigung", "lieferschein", "reisekostenbeleg"]. Fixed config to match sorted order.
+- Retrained model with higher LR (3e-5), cosine LR schedule, 20 unfrozen epochs, seed=7: 93.33% val accuracy
+- Validation results: float32 ONNX = 98.93%, float16 = 98.40% (both well above 85% threshold)
+- Updated export_onnx.py quantize_model() to use onnxruntime.transformers.float16 instead of quantize_dynamic
+- Files changed: edge_model/classification/config.py (class_names order), edge_model/classification/export_onnx.py (float16 quantization), PRD.md
+- Learnings for future iterations:
+  - INT8 dynamic quantization does NOT work for Conv-heavy models like EfficientNet — accuracy drops to ~35%
+  - Float16 conversion (onnxruntime.transformers.float16.convert_float_to_float16 with keep_io_types=True) works well, only ~0.5% accuracy loss
+  - Class ordering between dataset (sorted directories) and config MUST match — alphabetically "lieferschein" < "reisekostenbeleg"
+  - Training is very stochastic — seed setting, higher LR (3e-5 vs 1e-5), and cosine schedule dramatically improve results
+  - Static quantization also failed for EfficientNet — float16 is the right approach
+  - 349 tests pass, 23 skipped in ~76s
+---

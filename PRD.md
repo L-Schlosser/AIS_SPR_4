@@ -793,7 +793,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: `edge_model/classification/models/best_model.pt` exists and `metrics.json` shows val_accuracy > 0.85.
 
-- [ ] **Task 10.3: Export classifier to ONNX**
+- [x] **Task 10.3: Export classifier to ONNX**
   Execute:
   ```bash
   uv run python -m edge_model.classification.export_onnx --model-path edge_model/classification/models/best_model.pt --output-path edge_model/classification/models/classifier.onnx
