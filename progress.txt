@@ -749,3 +749,13 @@ This file tracks learnings across iterations.
   - sklearn classification_report with output_dict=True gives clean per-class metrics as nested dict
   - Ruff clean, 333 tests pass
 ---
+
+## Iteration 45 - Task 6.1 (Demo): Build About page
+- Built `demo/pages/4_About.py` with all required sections
+- Files changed: demo/pages/4_About.py, PRD.md
+- Sections: Team table, Technology Stack table (from README), How to Run code block, Project Structure tree, Repository info
+- Learnings for future iterations:
+  - Pattern: use st.table for static data, st.code for bash/text blocks
+  - All content sourced from README.md to stay consistent
+  - 333 unit tests pass, ruff clean
+---

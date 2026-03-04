@@ -153,7 +153,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 6: About Page
 
-- [ ] **Task 6.1: Build About page**
+- [x] **Task 6.1: Build About page**
   In `demo/pages/4_About.py`, create:
   - Section "Team":
     | Name | Role |
