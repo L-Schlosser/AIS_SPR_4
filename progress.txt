@@ -148,3 +148,20 @@ This file tracks learnings across iterations.
   - Phase 2 is now complete — all synthetic data generation and tests done
   - Next is Phase 3: Document Classification (Task 3.1)
 ---
+
+## Iteration 13 - Task 3.1: Create classification dataset and config
+- Created `edge_model/classification/config.py` with ClassificationConfig dataclass
+  - Fields: image_size=224, num_classes=3, batch_size=16, lr_frozen/unfrozen, epochs, model_name, class_names
+- Created `edge_model/classification/dataset.py` with:
+  - DocumentDataset: loads images from subdirectories, directory name = label
+  - get_transforms(): training (RandomResizedCrop, flip, jitter) and eval (Resize, CenterCrop) with ImageNet normalization
+  - create_dataloaders(): stratified train/val split using StratifiedShuffleSplit
+  - _SampleListDataset: lightweight wrapper for split subsets with transforms
+- Created `tests/unit/test_classifier_dataset.py` with 16 tests in 3 classes
+- Files changed: edge_model/classification/config.py, edge_model/classification/dataset.py, tests/unit/test_classifier_dataset.py, PRD.md
+- Learnings for future iterations:
+  - Don't subclass torch Subset for transform application — Subset.__getitem__ may bypass overrides. Use a standalone Dataset wrapper instead.
+  - StratifiedShuffleSplit from sklearn works well for balanced class splits
+  - Train group dependencies (torch, torchvision, sklearn) already synced from previous iterations
+  - 89 total tests pass across the project in ~9s
+---

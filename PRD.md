@@ -357,7 +357,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 3: Document Classification
 
-- [ ] **Task 3.1: Create classification dataset and config**
+- [x] **Task 3.1: Create classification dataset and config**
   Create `edge_model/classification/config.py`:
   - `ClassificationConfig` dataclass with: image_size=224, num_classes=3, batch_size=16, lr_frozen=1e-4, lr_unfrozen=1e-5, epochs_frozen=5, epochs_unfrozen=10, model_name="tf_efficientnet_lite0", class_names=["arztbesuchsbestaetigung", "reisekostenbeleg", "lieferschein"]
   Create `edge_model/classification/dataset.py`:
