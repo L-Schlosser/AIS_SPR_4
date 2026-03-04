@@ -759,3 +759,15 @@ This file tracks learnings across iterations.
   - All content sourced from README.md to stay consistent
   - 333 unit tests pass, ruff clean
 ---
+
+## Iteration 30 - Task 7.1: Add consistent styling and navigation
+- Enhanced demo/utils.py setup_page() with custom CSS and footer
+- CSS: hides Streamlit hamburger menu and default footer, consistent font stack, subtle h1 underline
+- Footer: fixed-position bar with "Edge-AI Document Processing for BMD Go — University Student Project"
+- All 5 page files already called setup_page() — no changes needed there
+- Files changed: demo/utils.py, PRD.md
+- Learnings for future iterations:
+  - Streamlit custom CSS injected via st.markdown(unsafe_allow_html=True)
+  - Fixed footer uses position:fixed with z-index to stay above content
+  - All 333 unit tests pass, ruff clean
+---

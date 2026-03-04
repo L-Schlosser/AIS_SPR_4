@@ -177,7 +177,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 7: Polish & Verify
 
-- [ ] **Task 7.1: Add consistent styling and navigation**
+- [x] **Task 7.1: Add consistent styling and navigation**
   In `demo/utils.py`, add:
   - Consistent page config (page_title, page_icon, layout="wide")
   - Custom CSS via st.markdown (subtle styling: hide Streamlit hamburger menu, consistent fonts)
