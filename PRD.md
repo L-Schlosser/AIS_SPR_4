@@ -535,7 +535,7 @@ All models ONNX-exported with INT8 quantization.
   - Test training runs for 1 epoch on tiny data without errors
   **Validation**: `uv run pytest tests/unit/test_ner_train.py -v` — all pass.
 
-- [ ] **Task 5.4: Create NER postprocessing**
+- [x] **Task 5.4: Create NER postprocessing**
   Create `edge_model/extraction/postprocess.py`:
   - `bio_tags_to_fields(tokens: list[str], tags: list[str]) -> dict[str, str]`:
     - Merge B-/I- tagged tokens into field values

@@ -323,3 +323,25 @@ This file tracks learnings across iterations.
   - compute_metrics receives (logits, label_ids) tuple — use np.argmax on logits for predictions
   - 208 total tests pass across the project in ~54s
 ---
+
+## Iteration 22 - Task 5.4: Create NER postprocessing
+- Created `edge_model/extraction/postprocess.py` with:
+  - `bio_tags_to_fields()`: merges B-/I- tagged tokens into field dict, handles subword ## cleanup, duplicate B- tags (keeps first), I- without B- ignored
+  - `postprocess_arztbesuch()`: maps PATIENT→patient_name, DOCTOR→doctor_name, etc.; parses dates (DD.MM.YYYY, DD/MM/YYYY) to ISO, times (HH.MM, "Uhr") to HH:MM, duration to int
+  - `postprocess_reisekosten()`: maps VENDOR→vendor_name, etc.; parses German amounts (comma decimal, thousands dots), defaults currency to EUR, normalizes category to lowercase enum
+  - `postprocess_lieferschein()`: builds nested sender/recipient objects, groups ITEM_DESC/QTY/UNIT into items array, maps DELNR→delivery_note_number
+  - `POSTPROCESSORS` dict mapping doc_type to its postprocessor function
+- Created `tests/unit/test_postprocess.py` with 42 tests across 6 classes:
+  - TestBioTagsToFields (12): simple, multi-token, subwords, O tags, empty, duplicates, mismatched lengths
+  - TestPostprocessArztbesuch (8): full fields, date formats, time formats, duration parsing, schema validation
+  - TestPostprocessReisekosten (7): full fields, euro sign, German thousands, default currency, categories, schema validation
+  - TestPostprocessLieferschein (7): full fields, sender/recipient, items, defaults, schema validation
+  - TestPostprocessors (3): all types present, callable, accept empty dict
+  - TestEdgeCases (5): end-to-end BIO→postprocess for each type, slash dates, unparseable amounts
+- Files changed: edge_model/extraction/postprocess.py, tests/unit/test_postprocess.py, PRD.md
+- Learnings for future iterations:
+  - German number format: comma=decimal, dot=thousands (1.234,56 → 1234.56)
+  - Schema validation in tests catches postprocessor output mismatches early
+  - bio_tags_to_fields is reusable across all doc types — postprocessors just reshape the raw dict
+  - 250 total tests pass across the project in ~52s
+---
