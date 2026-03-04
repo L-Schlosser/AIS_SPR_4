@@ -800,7 +800,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: Both `classifier.onnx` and `classifier_int8.onnx` exist. INT8 model is < 10MB. `uv run python -m edge_model.classification.validate --model-path edge_model/classification/models/classifier_int8.onnx --data-dir data/samples` shows accuracy > 0.85.
 
-- [ ] **Task 10.4: Train all three NER extraction models**
+- [x] **Task 10.4: Train all three NER extraction models**
   Execute for each document type:
   ```bash
   uv run python -m edge_model.extraction.train --document-type arztbesuchsbestaetigung --train-path data/samples/arztbesuchsbestaetigung_ner_train.jsonl --val-path data/samples/arztbesuchsbestaetigung_ner_val.jsonl --output-dir edge_model/extraction/models/arztbesuch

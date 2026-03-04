@@ -560,3 +560,20 @@ This file tracks learnings across iterations.
   - Static quantization also failed for EfficientNet — float16 is the right approach
   - 349 tests pass, 23 skipped in ~76s
 ---
+
+## Iteration 34 - Task 10.4: Train all three NER extraction models
+- Trained 3 NER models using distilbert-base-german-cased with 3 epochs each:
+  - arztbesuchsbestaetigung: F1=0.9995 (14 labels, ~18min training)
+  - reisekostenbeleg: F1=0.9987 (15 labels, ~11min training)
+  - lieferschein: F1=0.9991 (17 labels, ~11min training)
+- All models saved with config.json, model.safetensors, tokenizer.json, training_metrics.json
+- Used --epochs 3 override (default 20 was massive overkill — F1>0.99 after epoch 1)
+- Files changed: PRD.md, progress.txt (model files gitignored)
+- Learnings for future iterations:
+  - Synthetic NER data is very easy for DistilBERT — 3 epochs sufficient, 20 is massive overkill
+  - Training on CPU: ~2.8s/step for reisekosten/lieferschein, ~4.5s/step for arztbesuch (longer sequences)
+  - HuggingFace Trainer automatically selects best checkpoint via load_best_model_at_end=True
+  - Model dirs contain checkpoint-N subdirs — the best model files are at the top level
+  - Next task (10.5) exports these models to ONNX format
+  - 333 unit tests pass, ruff clean
+---

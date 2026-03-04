@@ -264,9 +264,12 @@ if __name__ == "__main__":
     parser.add_argument("--train-path", type=str, required=True, help="Path to training JSONL file")
     parser.add_argument("--val-path", type=str, required=True, help="Path to validation JSONL file")
     parser.add_argument("--output-dir", type=str, required=True, help="Directory to save trained model")
+    parser.add_argument("--epochs", type=int, default=None, help="Override number of training epochs")
     args = parser.parse_args()
 
     cfg = ExtractionConfig()
+    if args.epochs is not None:
+        cfg.epochs = args.epochs
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
