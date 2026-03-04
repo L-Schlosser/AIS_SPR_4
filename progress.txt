@@ -1,0 +1,2 @@
+# Progress Log
+This file tracks learnings across iterations.
