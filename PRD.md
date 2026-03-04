@@ -757,7 +757,7 @@ All models ONNX-exported with INT8 quantization.
   - Test NER + postprocessing together
   **Validation**: `uv run pytest tests/integration/ -v -m integration` — passes (skips if models unavailable).
 
-- [ ] **Task 9.2: Create end-to-end tests**
+- [x] **Task 9.2: Create end-to-end tests**
   Create `tests/e2e/test_full_pipeline.py`:
   - @pytest.mark.e2e
   - `test_arztbesuch_e2e`: Generate arztbesuch image → process → validate JSON against schema
