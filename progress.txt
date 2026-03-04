@@ -691,3 +691,30 @@ This file tracks learnings across iterations.
   - st.sidebar context manager (`with st.sidebar:`) is cleanest for sidebar content
   - Ruff clean, 333 tests pass
 ---
+
+## Iteration 41 - Task 3.1 (Demo): Build Live Demo page
+- Built full Live Demo page with two-column layout:
+  - Left column: file uploader (JPG/PNG), sample generator checkbox with doc type selectbox, image preview
+  - Right column: pipeline processing with @st.cache_resource, colored badges per doc type, confidence progress bar, processing time, extracted fields, expandable Raw JSON and OCR Text sections
+- Imports generators: _generate_one_arztbesuch, _generate_one_reisekosten, _generate_one_lieferschein from scripts.generate_samples
+- Graceful error handling: shows st.error if pipeline fails to load or process
+- Files changed: demo/pages/1_Live_Demo.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - @st.cache_resource is the right decorator for caching ML model loading across reruns
+  - Pipeline requires actual ONNX models — page handles missing models gracefully with error message
+  - result.model_dump(mode="json") works for Pydantic v2 to get JSON-serializable dict for st.json
+  - Ruff clean, 333 tests pass
+---
+
+## Iteration 42 - Task 4.1 (Demo): Build Architecture page
+- Built full Architecture page with 3 sections:
+  - Processing Pipeline: detailed graphviz flowchart with colored nodes showing all pipeline steps and confidence routing
+  - Pipeline Steps: 6 expandable sections (Image Preprocessing, Document Classification, OCR Text Extraction, NER, Postprocessing, Schema Validation)
+  - Model Details: table with model architecture, format, size, and quantization info
+- Files changed: demo/pages/2_Architecture.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - st.graphviz_chart with DOT notation supports fillcolor, dashed styles, diamond shapes for decisions
+  - st.expander works well for collapsible detail sections
+  - st.table renders dict-of-lists cleanly for model comparison tables
+  - Ruff clean, 333 tests pass
+---

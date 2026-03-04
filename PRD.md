@@ -84,7 +84,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 3: Live Demo Page
 
-- [ ] **Task 3.1: Build Live Demo page**
+- [x] **Task 3.1: Build Live Demo page**
   In `demo/pages/1_Live_Demo.py`, create:
   - Two-column layout: left = input, right = results
   - Left column:
@@ -105,7 +105,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 4: Architecture Page
 
-- [ ] **Task 4.1: Build Architecture page**
+- [x] **Task 4.1: Build Architecture page**
   In `demo/pages/2_Architecture.py`, create:
   - Section "Processing Pipeline" with a detailed graphviz flowchart showing all pipeline steps
   - Section "Pipeline Steps" with expandable sections (st.expander) for each step:
