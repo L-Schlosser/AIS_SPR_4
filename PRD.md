@@ -213,7 +213,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: Same jsonschema check as Task 1.1 but for this file.
 
-- [ ] **Task 1.3: Create Lieferschein JSON schema**
+- [x] **Task 1.3: Create Lieferschein JSON schema**
   Create `data/schemas/lieferschein.json`:
   ```json
   {
