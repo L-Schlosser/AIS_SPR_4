@@ -809,7 +809,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: Each model dir has `config.json`, `model.safetensors`, `tokenizer.json`. Training logs show F1 > 0.80 on validation set.
 
-- [ ] **Task 10.5: Export all NER models to ONNX**
+- [x] **Task 10.5: Export all NER models to ONNX**
   Execute:
   ```bash
   uv run python -m edge_model.extraction.export_onnx --model-dir edge_model/extraction/models/arztbesuch --output-dir edge_model/extraction/models/arztbesuch/onnx

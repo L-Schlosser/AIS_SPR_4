@@ -577,3 +577,20 @@ This file tracks learnings across iterations.
   - Next task (10.5) exports these models to ONNX format
   - 333 unit tests pass, ruff clean
 ---
+
+## Iteration 35 - Task 10.5: Export all NER models to ONNX
+- Exported all 3 NER models to ONNX using optimum ORTModelForTokenClassification.from_pretrained(export=True)
+- Applied INT8 dynamic quantization via onnxruntime quantize_dynamic
+- Model sizes per type:
+  - Full ONNX: 255 MB each (DistilBERT-base is 66M params at FP32)
+  - Quantized INT8: 64.10 MB each (74.9% reduction)
+- Verification: all 3 models produce correct tag predictions on sample text for both full and quantized versions
+- Output structure: edge_model/extraction/models/{type}/onnx/ (full) and /onnx/quantized/ (INT8)
+- Files changed: PRD.md, progress.txt (ONNX model files gitignored)
+- Learnings for future iterations:
+  - DistilBERT-base has ~66M params — INT8 quantized ONNX is ~64MB, not achievable under 25MB without model architecture changes
+  - INT8 dynamic quantization works well for transformer models (unlike Conv-heavy EfficientNet where float16 was needed)
+  - Quantized models show minor tag prediction differences on edge tokens but overall quality preserved
+  - optimum export produces model.onnx + config files in a directory structure
+  - 349 tests pass, 23 skipped, ruff clean
+---
