@@ -302,3 +302,24 @@ This file tracks learnings across iterations.
   - distilbert-base-german-cased downloaded from HuggingFace Hub (~250MB) on first use
   - 196 total tests pass across the project in ~47s
 ---
+
+## Iteration 21 - Task 5.3: Create NER training script
+- Created `edge_model/extraction/train.py` with:
+  - `compute_metrics_fn()`: returns a closure for HuggingFace Trainer, seqeval-style evaluation ignoring -100 and "O" tags
+  - `compute_per_entity_f1()`: per-entity-type precision/recall/F1 computation
+  - `train_ner_model()`: full training pipeline using HuggingFace Trainer with TrainingArguments
+  - Saves model, tokenizer, and training_metrics.json to output_dir
+  - CLI with argparse for document-type, train-path, val-path, output-dir
+- Created `tests/unit/test_ner_train.py` with 12 tests across 4 classes:
+  - TestModelCreation (3): correct num_labels, output shape, all doc types have labels
+  - TestComputeMetrics (5): perfect/wrong/mixed predictions, -100 ignored, expected keys
+  - TestPerEntityF1 (2): per-entity metrics, empty predictions
+  - TestTrainingRun (2): 1-epoch training on tiny data, invalid doc type raises ValueError
+- Added `accelerate` to train dependency group (required by HuggingFace Trainer)
+- Files changed: edge_model/extraction/train.py, tests/unit/test_ner_train.py, pyproject.toml, uv.lock, PRD.md
+- Learnings for future iterations:
+  - HuggingFace Trainer requires `accelerate>=1.1.0` — must be in train dependency group
+  - `remove_unused_columns=False` is critical in TrainingArguments when dataset returns custom dict keys
+  - compute_metrics receives (logits, label_ids) tuple — use np.argmax on logits for predictions
+  - 208 total tests pass across the project in ~54s
+---

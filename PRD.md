@@ -513,7 +513,7 @@ All models ONNX-exported with INT8 quantization.
   - Test batch collation works
   **Validation**: `uv run pytest tests/unit/test_ner_dataset.py -v` — all pass.
 
-- [ ] **Task 5.3: Create NER training script**
+- [x] **Task 5.3: Create NER training script**
   Create `edge_model/extraction/train.py`:
   - `train_ner_model(config, document_type, train_path, val_path, output_dir)`:
     1. Load labels from labels.py for given document_type
