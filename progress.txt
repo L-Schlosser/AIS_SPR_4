@@ -479,3 +479,19 @@ This file tracks learnings across iterations.
   - Phase 8 (Mobile Demo App) is now complete
   - 338 total tests pass across the project in ~556s (full suite including training tests)
 ---
+
+## Iteration 29 - Task 9.1: Create integration tests
+- Created `tests/integration/test_classification_pipeline.py` with 7 tests:
+  - TestClassificationPreprocessing (3): synthetic image preprocessing, different sizes, grayscale handling
+  - TestClassificationInference (4): valid class, correct predictions, batch, preprocessing+classification (all skip if model absent)
+- Created `tests/integration/test_extraction_pipeline.py` with 13 tests:
+  - TestNERPostprocessingIntegration (4): simulated BIO→schema for all 3 doc types + postprocessor document_type check
+  - TestExtractionInference (9): parametrized across 3 doc types × 3 test variants (skip if model absent)
+- All tests marked with @pytest.mark.integration
+- Tests that need models gracefully skip with clear messages when models are not yet trained
+- Files changed: tests/integration/test_classification_pipeline.py, tests/integration/test_extraction_pipeline.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - Use `_model_available()` helper at module level for skipif decorators + runtime pytest.skip() for parametrized tests
+  - SchemaValidator() can be used inline in integration tests to validate postprocessed output
+  - 345 total tests pass across the project in ~80s, 13 skipped (model-dependent)
+---

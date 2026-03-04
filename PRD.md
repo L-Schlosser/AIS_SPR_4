@@ -743,7 +743,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 9: Integration & E2E Tests
 
-- [ ] **Task 9.1: Create integration tests**
+- [x] **Task 9.1: Create integration tests**
   Create `tests/integration/test_classification_pipeline.py`:
   - @pytest.mark.integration
   - Generate synthetic test images (3, one per type)
