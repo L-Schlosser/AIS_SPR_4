@@ -12,15 +12,15 @@ from edge_model.inference.validator import SchemaValidator
 
 # Model paths matching config.yaml
 EXTRACTOR_MODEL_PATHS = {
-    "arztbesuchsbestaetigung": Path("edge_model/extraction/models/arztbesuch/model.onnx"),
-    "reisekostenbeleg": Path("edge_model/extraction/models/reisekosten/model.onnx"),
-    "lieferschein": Path("edge_model/extraction/models/lieferschein/model.onnx"),
+    "arztbesuchsbestaetigung": Path("edge_model/extraction/models/arztbesuch/onnx/quantized/model.onnx"),
+    "reisekostenbeleg": Path("edge_model/extraction/models/reisekosten/onnx/quantized/model.onnx"),
+    "lieferschein": Path("edge_model/extraction/models/lieferschein/onnx/quantized/model.onnx"),
 }
 
 EXTRACTOR_TOKENIZER_PATHS = {
-    "arztbesuchsbestaetigung": "edge_model/extraction/models/arztbesuch/",
-    "reisekostenbeleg": "edge_model/extraction/models/reisekosten/",
-    "lieferschein": "edge_model/extraction/models/lieferschein/",
+    "arztbesuchsbestaetigung": "edge_model/extraction/models/arztbesuch/onnx/quantized/",
+    "reisekostenbeleg": "edge_model/extraction/models/reisekosten/onnx/quantized/",
+    "lieferschein": "edge_model/extraction/models/lieferschein/onnx/quantized/",
 }
 
 # Sample OCR-like text for each document type

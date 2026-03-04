@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 
 from api.models import DocumentType, ProcessingResult
+from edge_model.classification.config import ClassificationConfig
 from edge_model.extraction.labels import LABEL_SETS
 from edge_model.inference.classifier_inference import ClassifierInference
 from edge_model.inference.config import PipelineConfig, load_config
@@ -24,8 +25,8 @@ class DocumentPipeline:
         """
         self._config = config
 
-        # Classifier
-        class_names = [dt.value for dt in DocumentType]
+        # Classifier — use trained model's class order (alphabetical), not enum order
+        class_names = ClassificationConfig().class_names
         self._classifier = ClassifierInference(config.classifier_model_path, class_names)
 
         # Per-document-type extractors

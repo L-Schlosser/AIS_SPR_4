@@ -174,9 +174,7 @@ def cmd_demo(args: argparse.Namespace) -> None:
                 (generate_reisekosten, "reisekostenbeleg"),
                 (generate_lieferschein, "lieferschein"),
             ]:
-                out_dir = os.path.join(tmpdir, dtype)
-                os.makedirs(out_dir, exist_ok=True)
-                gen_fn(out_dir, count=1)
+                gen_fn(Path(tmpdir), count=1)
                 print(f"  {_GREEN}Generated:{_RESET} {dtype}")
         except ImportError:
             print(f"  {_RED}Error: generate_samples requires the 'train' dependency group.{_RESET}")

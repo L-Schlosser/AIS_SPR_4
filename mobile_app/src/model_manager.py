@@ -25,9 +25,9 @@ class ModelManager:
 
     REQUIRED_MODELS = [
         ("classifier", "classification/models/classifier_int8.onnx"),
-        ("extractor_arztbesuch", "extraction/models/arztbesuch/model.onnx"),
-        ("extractor_reisekosten", "extraction/models/reisekosten/model.onnx"),
-        ("extractor_lieferschein", "extraction/models/lieferschein/model.onnx"),
+        ("extractor_arztbesuch", "extraction/models/arztbesuch/onnx/quantized/model.onnx"),
+        ("extractor_reisekosten", "extraction/models/reisekosten/onnx/quantized/model.onnx"),
+        ("extractor_lieferschein", "extraction/models/lieferschein/onnx/quantized/model.onnx"),
     ]
 
     def __init__(self, models_dir: str) -> None:
