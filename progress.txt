@@ -282,3 +282,23 @@ This file tracks learnings across iterations.
   - ruff E741 still catches `l` variable name — use `lbl` instead
   - Phase 5 started — next is Task 5.2 (NER dataset and config)
 ---
+
+## Iteration 20 - Task 5.2: Create NER dataset and config
+- Created `edge_model/extraction/config.py` with ExtractionConfig dataclass:
+  - model_name="distilbert-base-german-cased", max_length=256, batch_size=16, lr=5e-5, epochs=20, weight_decay=0.01
+- Created `edge_model/extraction/dataset.py` with:
+  - `load_ner_data()`: loads JSONL files with validation (token/tag length, required keys)
+  - `NERDataset`: tokenizes with DistilBertTokenizerFast, handles subword alignment (-100 for non-first subwords, [CLS], [SEP], [PAD])
+  - `create_ner_dataloaders()`: factory for train/val DataLoaders
+- Created `tests/unit/test_ner_dataset.py` with 18 tests across 4 classes:
+  - TestLoadNERData (7): valid JSONL, content preservation, missing keys, length mismatch, empty, blank lines
+  - TestNERDataset (8): length, keys, shapes, special tokens -100, padding -100, subword alignment, known mapping, dtypes
+  - TestBatchCollation (2): batch and single-item batching
+  - TestCreateNERDataloaders (1): factory returns correct loaders with expected batch sizes
+- Files changed: edge_model/extraction/config.py, edge_model/extraction/dataset.py, tests/unit/test_ner_dataset.py, PRD.md
+- Learnings for future iterations:
+  - DistilBertTokenizerFast `is_split_into_words=True` enables pre-tokenized input with word_ids() for alignment
+  - Subword alignment: word_ids() returns None for special tokens, same ID for subwords of same word
+  - distilbert-base-german-cased downloaded from HuggingFace Hub (~250MB) on first use
+  - 196 total tests pass across the project in ~47s
+---

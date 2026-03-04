@@ -495,7 +495,7 @@ All models ONNX-exported with INT8 quantization.
   - Test LABEL_SETS contains all 3 document types
   **Validation**: `uv run pytest tests/unit/test_labels.py -v` — all pass.
 
-- [ ] **Task 5.2: Create NER dataset and config**
+- [x] **Task 5.2: Create NER dataset and config**
   Create `edge_model/extraction/config.py`:
   - `ExtractionConfig` dataclass: model_name="distilbert-base-german-cased", max_length=256, batch_size=16, lr=5e-5, epochs=20, weight_decay=0.01
   Create `edge_model/extraction/dataset.py`:
