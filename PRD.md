@@ -422,7 +422,7 @@ All models ONNX-exported with INT8 quantization.
   - Test ONNX inference produces correct output shape
   **Validation**: `uv run pytest tests/unit/test_classifier_export.py -v` — all pass.
 
-- [ ] **Task 3.4: Create classification validation script**
+- [x] **Task 3.4: Create classification validation script**
   Create `edge_model/classification/validate.py`:
   - `validate_onnx_model(model_path, data_dir, config)`:
     1. Load ONNX model via onnxruntime

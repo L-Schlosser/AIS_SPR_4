@@ -203,3 +203,22 @@ This file tracks learnings across iterations.
   - Use a shared `_export_tiny_model()` helper in tests to avoid repeating export boilerplate
   - 107 total tests pass across the project in ~13s
 ---
+
+## Iteration 16 - Task 3.4: Create classification validation script
+- Created `edge_model/classification/validate.py` with:
+  - `compute_metrics()`: computes accuracy, per-class precision/recall/F1, confusion matrix from predictions+labels
+  - `validate_onnx_model()`: loads ONNX model, runs inference on images from subdirectories, computes and prints metrics, saves to JSON
+  - `_preprocess_image()`: shared image preprocessing (resize, normalize, HWC→CHW)
+  - CLI with argparse for model-path and data-dir
+- Created `tests/unit/test_classifier_validate.py` with 10 tests:
+  - Perfect, all-wrong, and partial accuracy scenarios
+  - Confusion matrix shape (3,3), values, row sums matching support
+  - Precision/recall/F1 with known values
+  - Empty inputs, support per class, all expected keys present
+- Files changed: edge_model/classification/validate.py, tests/unit/test_classifier_validate.py, PRD.md
+- Learnings for future iterations:
+  - ruff catches f-strings without placeholders (F541) — same pattern as before, use plain strings
+  - `compute_metrics()` is a pure function testable without ONNX — good pattern for separating logic from I/O
+  - Phase 3 (Document Classification) is now complete
+  - 117 total tests pass across the project in ~13s
+---
