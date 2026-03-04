@@ -635,3 +635,37 @@ This file tracks learnings across iterations.
   - OCR processing on CPU for 800x1130 images takes 3-5 seconds — cold start with 4 models adds ~7s overhead
   - ONNX model paths should be defined in ONE place (config.yaml) and referenced everywhere else
 ---
+
+## Iteration 38 - Task 11.3: Create comprehensive README.md
+- Created `README.md` at project root with:
+  - Project title and description
+  - Architecture overview Mermaid diagram (pipeline flow)
+  - Supported document types table with example JSON output
+  - Quick start commands (`uv sync`, `demo`, `info`)
+  - Full setup with all dependency groups
+  - Step-by-step model training instructions (classifier, ONNX export, NER, NER export)
+  - Test running instructions (unit, integration, e2e, ruff)
+  - Full project structure tree with file descriptions
+  - Technology stack table (10 technologies)
+  - Model sizes table (classifier 6.5MB, NER 64MB each, ~199MB total)
+  - Team roles placeholder table
+  - License note
+- Files changed: README.md, PRD.md
+- Learnings for future iterations:
+  - All 38 iterations complete — all PRD tasks marked [x]
+  - 333 unit tests pass, ruff clean
+  - Project is feature-complete
+---
+
+## Iteration 38 - Task 1.1 (Demo): Update pyproject.toml demo dependencies
+- Updated demo dependency group: added plotly>=5.18.0 and transformers>=4.38.0
+- Deleted old broken demo_app.py
+- Ran `uv sync --group demo --group ocr` — installed plotly 6.6.0, transformers 4.57.6
+- Verified: `import streamlit; import plotly` succeeds
+- All 333 unit tests pass, ruff clean
+- Files changed: pyproject.toml, PRD.md, progress.txt; deleted demo_app.py
+- Learnings for future iterations:
+  - Tests require train group (faker dependency in conftest.py), so use `--group train` too when running tests
+  - plotly resolved to v6.6.0 (above minimum 5.18.0)
+  - transformers resolved to v4.57.6
+---
