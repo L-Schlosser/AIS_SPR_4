@@ -616,7 +616,7 @@ All models ONNX-exported with INT8 quantization.
   - Mock ONNX session to test predict returns correct format
   **Validation**: `uv run pytest tests/unit/test_classifier_inference.py -v` — all pass.
 
-- [ ] **Task 6.2: Create extractor inference wrapper**
+- [x] **Task 6.2: Create extractor inference wrapper**
   Create `edge_model/inference/extractor_inference.py`:
   - `class ExtractorInference`:
     - `__init__(self, model_path: str, tokenizer_path: str, labels: list[str])`:

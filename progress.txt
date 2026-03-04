@@ -385,3 +385,20 @@ This file tracks learnings across iterations.
   - Phase 6 started — next is Task 6.2 (extractor inference wrapper)
   - 278 total tests pass across the project in ~65s
 ---
+
+## Iteration 25 - Task 6.2: Create extractor inference wrapper
+- Created `edge_model/inference/extractor_inference.py` with ExtractorInference class:
+  - `extract()`: tokenizes text, runs ONNX inference, converts tag IDs to BIO tags (skipping special tokens via offset_mapping), calls bio_tags_to_fields
+  - `extract_and_postprocess()`: calls extract() then applies doc-type-specific postprocessor from POSTPROCESSORS dict
+  - Uses offset_mapping from tokenizer to identify and skip special tokens ([CLS], [SEP], [PAD])
+- Created `tests/unit/test_extractor_inference.py` with 14 tests across 3 classes:
+  - TestExtractorInferenceTokenization (3): output shapes, dtype, offset_mapping availability
+  - TestExtractorInference (6): returns dict, all-O empty, session keys/shapes/dtypes, known B-PATIENT tags produce field
+  - TestExtractAndPostprocess (5): returns dict, adds document_type, unknown type raises, all 3 types work, reisekosten default EUR
+- Files changed: edge_model/inference/extractor_inference.py, tests/unit/test_extractor_inference.py, PRD.md
+- Learnings for future iterations:
+  - offset_mapping (0,0) identifies special tokens — more reliable than checking token strings
+  - Mock ONNX session pattern: patch ort.InferenceSession in __init__, then replace _session attribute
+  - 292 total tests pass across the project in ~78s
+  - Next is Task 6.3 (main pipeline orchestrator)
+---
