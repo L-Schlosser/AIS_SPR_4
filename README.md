@@ -182,8 +182,6 @@ This guide explains how to set up the project, manage dependencies, and contribu
 
 ---
 
-# Setup Instructions
-
 ## Clone the repository
 
 ```bash
