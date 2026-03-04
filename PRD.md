@@ -266,7 +266,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: Same jsonschema check.
 
-- [ ] **Task 1.4: Create Pydantic models and DocumentType enum**
+- [x] **Task 1.4: Create Pydantic models and DocumentType enum**
   Create `api/models.py`:
   - `DocumentType` enum with values: `arztbesuchsbestaetigung`, `reisekostenbeleg`, `lieferschein`
   - `ArztbesuchsbestaetigungResult(BaseModel)` with all fields from schema 1.1
