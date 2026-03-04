@@ -11,3 +11,14 @@ This file tracks learnings across iterations.
   - Python 3.12.11 used
   - `.venv` created automatically by uv
 ---
+
+## Iteration 2 - Task 0.2: Create directory structure and __init__.py files
+- Created all directories: data/samples/{3 types}, data/schemas, edge_model/{classification,extraction,inference}, ocr, api, mobile_app/src, scripts, tests/{unit,integration,e2e}, docs
+- Created .gitkeep files in data dirs, scripts, docs
+- Created __init__.py files in all Python packages with module docstrings
+- Files changed: 18 new files across the directory structure
+- Learnings for future iterations:
+  - Use `edge_model` (underscore) not `edge-model` (hyphen) for Python packages
+  - All imports verified: `import edge_model; import ocr; import api` works
+  - ruff check passes with all new files
+---

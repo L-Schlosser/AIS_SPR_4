@@ -84,7 +84,7 @@ All models ONNX-exported with INT8 quantization.
   Then run `uv sync --group dev` to install base + dev dependencies.
   **Validation**: `uv run python -c "import onnxruntime; print(onnxruntime.__version__)"` succeeds.
 
-- [ ] **Task 0.2: Create directory structure and __init__.py files**
+- [x] **Task 0.2: Create directory structure and __init__.py files**
   Create ALL of these directories and files:
   ```
   data/samples/arztbesuchsbestaetigung/.gitkeep
