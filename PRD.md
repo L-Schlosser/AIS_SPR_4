@@ -590,7 +590,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 6: Inference Pipeline
 
-- [ ] **Task 6.1: Create classifier inference wrapper**
+- [x] **Task 6.1: Create classifier inference wrapper**
   Create `edge_model/inference/classifier_inference.py`:
   - `class ClassifierInference`:
     - `__init__(self, model_path: str, class_names: list[str])`:

@@ -365,3 +365,23 @@ This file tracks learnings across iterations.
   - Phase 5 (Field Extraction NER) is now complete — all labels, dataset, training, postprocessing, ONNX export done
   - 259 total tests pass across the project in ~64s
 ---
+
+## Iteration 24 - Task 6.1: Create classifier inference wrapper
+- Created `edge_model/inference/preprocessor.py` with ImagePreprocessor class:
+  - `prepare_for_classification()`: resize, normalize (ImageNet stats), HWC→CHW, add batch dim
+  - `load_image()`: loads image file and returns RGB numpy array
+- Created `edge_model/inference/classifier_inference.py` with ClassifierInference class:
+  - `predict()`: preprocesses image, runs ONNX inference, applies softmax, returns (class_name, confidence)
+  - `predict_batch()`: concatenates preprocessed images, runs batch inference
+  - `_softmax()`: numerically stable softmax utility
+- Created `tests/unit/test_classifier_inference.py` with 19 tests across 3 classes:
+  - TestImagePreprocessor (8): shape, custom size, dtype, normalization range, zero/white image, load image, grayscale conversion
+  - TestClassifierInference (8): predict format, class selection, confidence range, batch empty/multiple, input name verification
+  - TestSoftmax (3): sum to one, uniform, large values stability
+- Files changed: edge_model/inference/preprocessor.py, edge_model/inference/classifier_inference.py, tests/unit/test_classifier_inference.py, PRD.md
+- Learnings for future iterations:
+  - Reuse ImageNet mean/std constants from preprocessor (IMAGENET_MEAN, IMAGENET_STD) in tests
+  - Mock ONNX session with `patch("...ort.InferenceSession")` to avoid needing real model files
+  - Phase 6 started — next is Task 6.2 (extractor inference wrapper)
+  - 278 total tests pass across the project in ~65s
+---
