@@ -323,7 +323,7 @@ All models ONNX-exported with INT8 quantization.
   - `main()` generates all three types with `argparse` for count/output_dir
   **Validation**: `uv run python scripts/generate_samples.py --count 10 --output-dir data/samples` generates 30 images (10 per type) + 30 label files. Spot-check: open one image to confirm it looks like a document.
 
-- [ ] **Task 2.2: Create NER text sample generator**
+- [x] **Task 2.2: Create NER text sample generator**
   Create `scripts/generate_text_samples.py`:
   - Generates BIO-tagged text simulating OCR output for NER training
   - For each document type, creates realistic text sequences with BIO tags
