@@ -94,3 +94,20 @@ This file tracks learnings across iterations.
   - SchemaValidator will be used by the pipeline (Task 6.3) and service (Task 7.1)
   - Phase 1 is now complete - all schemas, Pydantic models, and validation utility done
 ---
+
+## Iteration 10 - Task 2.1: Create document image generator
+- Added `faker` to train dependency group via `uv add faker --group train`
+- Created `scripts/generate_samples.py` with three generators:
+  - `generate_arztbesuch()`: White canvas 800x1130, header "BESTÄTIGUNG ARZTBESUCH", German doctor/patient/facility fields
+  - `generate_reisekosten()`: Header varies (RECHNUNG/QUITTUNG/BELEG), company info, amounts with MwSt, categories
+  - `generate_lieferschein()`: Header "LIEFERSCHEIN", sender/recipient blocks, items table with qty/unit
+- Augmentations applied to 50% of images: rotation ±3°, brightness ±15%, Gaussian noise, optional blur
+- Each image saved as PNG with companion `_label.json` matching JSON schemas
+- Files changed: scripts/generate_samples.py, pyproject.toml (faker added), uv.lock
+- Learnings for future iterations:
+  - Pillow font loading: try multiple font names (arial, DejaVuSans, LiberationSans) with fallback to default
+  - Generated labels validated against all 3 JSON schemas with 0 errors
+  - ruff line-length 120: break long lines by extracting variables or using multi-line args
+  - Images are gitignored (data/samples/**/*.png) but schemas are not
+  - Phase 2 started - next is Task 2.2 (NER text sample generator)
+---

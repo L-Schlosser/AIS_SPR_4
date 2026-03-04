@@ -298,7 +298,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 2: Synthetic Data Generation
 
-- [ ] **Task 2.1: Create document image generator**
+- [x] **Task 2.1: Create document image generator**
   First run: `uv add faker --group train`
   Create `scripts/generate_samples.py`:
   - Uses Pillow + Faker (de_DE locale) to generate synthetic document images
