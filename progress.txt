@@ -184,3 +184,22 @@ This file tracks learnings across iterations.
   - timm model downloaded from HuggingFace Hub on first use (~16MB for EfficientNet-Lite0)
   - 99 total tests pass across the project in ~12s
 ---
+
+## Iteration 15 - Task 3.3: Create ONNX export for classifier
+- Created `edge_model/classification/export_onnx.py` with:
+  - `export_to_onnx()`: loads PyTorch model, exports to ONNX format with dynamic batch axes
+  - `quantize_model()`: INT8 dynamic quantization via onnxruntime
+  - `verify_onnx()`: runs ONNX inference with random or image input, asserts output shape
+  - CLI entry point for export → quantize → verify pipeline
+- Created `tests/unit/test_classifier_export.py` with 8 tests:
+  - TestExportToOnnx: valid ONNX file, correct I/O names
+  - TestQuantizeModel: quantized file exists and is valid
+  - TestVerifyOnnx: correct output shape, random input, sample image, batch inference
+- Added `onnxscript` to train dependency group (required by torch>=2.9 for ONNX export)
+- Files changed: edge_model/classification/export_onnx.py, tests/unit/test_classifier_export.py, pyproject.toml, uv.lock, PRD.md
+- Learnings for future iterations:
+  - PyTorch 2.9+ uses dynamo-based ONNX export by default — must use `dynamo=False` for TorchScript-based export compatible with onnxruntime quantization
+  - `onnxscript` package required as a dependency for torch.onnx.export to work at all
+  - Use a shared `_export_tiny_model()` helper in tests to avoid repeating export boilerplate
+  - 107 total tests pass across the project in ~13s
+---

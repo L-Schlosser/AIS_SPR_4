@@ -398,7 +398,7 @@ All models ONNX-exported with INT8 quantization.
   - Test train_epoch runs without error on tiny dataset (2 images per class)
   **Validation**: `uv run pytest tests/unit/test_classifier_train.py -v` — all pass.
 
-- [ ] **Task 3.3: Create ONNX export for classifier**
+- [x] **Task 3.3: Create ONNX export for classifier**
   Create `edge_model/classification/export_onnx.py`:
   - `export_to_onnx(model_path, output_path, config)`:
     1. Load PyTorch model from model_path
