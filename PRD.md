@@ -124,7 +124,7 @@ Shows: live document processing demo, architecture, model metrics, team info.
 
 ### Phase 5: Metrics Page
 
-- [ ] **Task 5.1: Create metrics generation script**
+- [x] **Task 5.1: Create metrics generation script**
   Create `demo/generate_metrics.py` that:
   - Loads the trained classifier and runs validation on sample images (use data/samples/)
   - Computes: accuracy, per-class precision/recall/F1, confusion matrix

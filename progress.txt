@@ -718,3 +718,19 @@ This file tracks learnings across iterations.
   - st.table renders dict-of-lists cleanly for model comparison tables
   - Ruff clean, 333 tests pass
 ---
+
+## Iteration 43 - Task 5.1 (Demo): Create metrics generation script
+- Created `demo/generate_metrics.py` that evaluates both classifier and NER models
+- Classifier: runs ONNX inference on 750 sample images, uses sklearn classification_report and confusion_matrix
+- NER: runs ONNX inference on validation JSONL files (300 per doc type) with is_split_into_words=True tokenization
+- Computes per-entity F1, micro-averaged F1, and token accuracy for each doc type
+- Results: classifier accuracy 98.4%, NER F1 0.97-0.99 across all 3 doc types
+- Saved to `demo/metrics/classifier_metrics.json` and `demo/metrics/ner_metrics.json`
+- Files changed: demo/generate_metrics.py, demo/metrics/classifier_metrics.json, demo/metrics/ner_metrics.json, PRD.md, progress.txt
+- Learnings for future iterations:
+  - CRITICAL: NER evaluation must use `is_split_into_words=True` tokenization to match training — using plain text tokenization drops F1 from 0.99 to 0.08
+  - word_ids() alignment only works correctly when tokenizing the same way as training (pre-tokenized input)
+  - Must run script as module (`python -m demo.generate_metrics`) not directly (`python demo/generate_metrics.py`) for imports to work
+  - sklearn classification_report with output_dict=True gives clean per-class metrics as nested dict
+  - Ruff clean, 333 tests pass
+---

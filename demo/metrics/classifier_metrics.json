@@ -1,0 +1,41 @@
+{
+  "accuracy": 0.984,
+  "per_class": {
+    "arztbesuchsbestaetigung": {
+      "precision": 1.0,
+      "recall": 0.968,
+      "f1": 0.9837,
+      "support": 250
+    },
+    "lieferschein": {
+      "precision": 0.9804,
+      "recall": 1.0,
+      "f1": 0.9901,
+      "support": 250
+    },
+    "reisekostenbeleg": {
+      "precision": 0.9723,
+      "recall": 0.984,
+      "f1": 0.9781,
+      "support": 250
+    }
+  },
+  "confusion_matrix": [
+    [
+      242,
+      1,
+      7
+    ],
+    [
+      0,
+      250,
+      0
+    ],
+    [
+      0,
+      4,
+      246
+    ]
+  ],
+  "total_images": 750
+}

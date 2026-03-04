@@ -1,0 +1,234 @@
+{
+  "arztbesuchsbestaetigung": {
+    "micro_f1": 0.9907,
+    "micro_precision": 0.9907,
+    "micro_recall": 0.9907,
+    "accuracy": 0.9951,
+    "per_entity": {
+      "B-ADDRESS": {
+        "precision": 0.9962,
+        "recall": 0.8767,
+        "f1": 0.9326
+      },
+      "B-DATE": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-DOCTOR": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-DURATION": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-FACILITY": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-PATIENT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-TIME": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "I-ADDRESS": {
+        "precision": 0.9646,
+        "recall": 0.9989,
+        "f1": 0.9815
+      },
+      "I-DOCTOR": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "I-FACILITY": {
+        "precision": 0.9902,
+        "recall": 1.0,
+        "f1": 0.9951
+      },
+      "I-PATIENT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "num_samples": 300
+  },
+  "lieferschein": {
+    "micro_f1": 0.969,
+    "micro_precision": 0.9874,
+    "micro_recall": 0.9512,
+    "accuracy": 0.9675,
+    "per_entity": {
+      "B-DELDATE": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-DELNR": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-ITEM_DESC": {
+        "precision": 0.9973,
+        "recall": 1.0,
+        "f1": 0.9987
+      },
+      "B-ITEM_QTY": {
+        "precision": 0.9987,
+        "recall": 1.0,
+        "f1": 0.9993
+      },
+      "B-ITEM_UNIT": {
+        "precision": 0.9933,
+        "recall": 1.0,
+        "f1": 0.9966
+      },
+      "B-ORDNR": {
+        "precision": 0.9967,
+        "recall": 1.0,
+        "f1": 0.9983
+      },
+      "B-RADDR": {
+        "precision": 0.9855,
+        "recall": 0.9067,
+        "f1": 0.9444
+      },
+      "B-RECIP": {
+        "precision": 0.9676,
+        "recall": 0.9967,
+        "f1": 0.9819
+      },
+      "B-SADDR": {
+        "precision": 0.9817,
+        "recall": 0.8933,
+        "f1": 0.9354
+      },
+      "B-SENDER": {
+        "precision": 0.9833,
+        "recall": 0.98,
+        "f1": 0.9816
+      },
+      "B-WEIGHT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "I-ITEM_DESC": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "I-RADDR": {
+        "precision": 0.9776,
+        "recall": 0.9849,
+        "f1": 0.9812
+      },
+      "I-RECIP": {
+        "precision": 0.9616,
+        "recall": 1.0,
+        "f1": 0.9804
+      },
+      "I-SADDR": {
+        "precision": 0.9789,
+        "recall": 0.9872,
+        "f1": 0.983
+      },
+      "I-SENDER": {
+        "precision": 0.9903,
+        "recall": 0.9884,
+        "f1": 0.9894
+      },
+      "I-WEIGHT": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "num_samples": 300
+  },
+  "reisekostenbeleg": {
+    "micro_f1": 0.9805,
+    "micro_precision": 0.9876,
+    "micro_recall": 0.9734,
+    "accuracy": 0.9827,
+    "per_entity": {
+      "B-AMOUNT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-CATEGORY": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-CURRENCY": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-DATE": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-DESC": {
+        "precision": 0.9914,
+        "recall": 0.77,
+        "f1": 0.8668
+      },
+      "B-RECEIPT_NUM": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-VADDRESS": {
+        "precision": 0.9805,
+        "recall": 0.8664,
+        "f1": 0.9199
+      },
+      "B-VAT_AMOUNT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-VAT_RATE": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "B-VENDOR": {
+        "precision": 0.9615,
+        "recall": 1.0,
+        "f1": 0.9804
+      },
+      "I-DESC": {
+        "precision": 0.9842,
+        "recall": 0.9775,
+        "f1": 0.9808
+      },
+      "I-VADDRESS": {
+        "precision": 0.9701,
+        "recall": 0.993,
+        "f1": 0.9814
+      },
+      "I-VENDOR": {
+        "precision": 0.9825,
+        "recall": 0.9842,
+        "f1": 0.9834
+      }
+    },
+    "num_samples": 300
+  }
+}
