@@ -565,7 +565,7 @@ All models ONNX-exported with INT8 quantization.
   - Test that postprocessed output validates against JSON schemas
   **Validation**: `uv run pytest tests/unit/test_postprocess.py -v` — all pass.
 
-- [ ] **Task 5.5: Create NER ONNX export**
+- [x] **Task 5.5: Create NER ONNX export**
   Create `edge_model/extraction/export_onnx.py`:
   - `export_ner_to_onnx(model_dir, output_path)`:
     1. Load model using `optimum.onnxruntime.ORTModelForTokenClassification.from_pretrained(model_dir, export=True)`

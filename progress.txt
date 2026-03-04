@@ -345,3 +345,23 @@ This file tracks learnings across iterations.
   - bio_tags_to_fields is reusable across all doc types — postprocessors just reshape the raw dict
   - 250 total tests pass across the project in ~52s
 ---
+
+## Iteration 23 - Task 5.5: Create NER ONNX export
+- Created `edge_model/extraction/export_onnx.py` with:
+  - `export_ner_to_onnx()`: uses optimum ORTModelForTokenClassification.from_pretrained(export=True), copies tokenizer
+  - `quantize_ner_model()`: INT8 dynamic quantization, copies non-ONNX files (config, tokenizer) to output
+  - `verify_ner_onnx()`: loads ONNX model + tokenizer, tokenizes sample text, runs inference, prints predictions
+  - CLI entry point for export → quantize → verify pipeline for all 3 doc types
+- Created `tests/unit/test_ner_export.py` with 9 tests across 3 classes:
+  - TestExportNerToOnnx (3): ONNX files created, tokenizer copied, inference works
+  - TestQuantizeNerModel (3): quantized model smaller, inference works, missing ONNX raises error
+  - TestVerifyNerOnnx (3): logits shape, longer text, missing ONNX raises error
+- Updated `pyproject.toml`: changed `optimum>=1.17.0` to `optimum[onnxruntime]>=1.17.0` (onnxruntime extra required for ORTModel)
+- Files changed: edge_model/extraction/export_onnx.py, tests/unit/test_ner_export.py, pyproject.toml, uv.lock, PRD.md
+- Learnings for future iterations:
+  - `optimum[onnxruntime]` extra is REQUIRED — plain `optimum` doesn't include `optimum.onnxruntime` module
+  - When creating tiny test models, use `tokenizer.vocab_size` from the actual tokenizer to avoid OOB embedding errors
+  - optimum exports produce a directory (not single file) with model.onnx + config files
+  - Phase 5 (Field Extraction NER) is now complete — all labels, dataset, training, postprocessing, ONNX export done
+  - 259 total tests pass across the project in ~64s
+---
