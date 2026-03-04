@@ -150,7 +150,7 @@ All models ONNX-exported with INT8 quantization.
   ```
   **Validation**: File exists and contains `__pycache__`.
 
-- [ ] **Task 0.4: Create progress.txt**
+- [x] **Task 0.4: Create progress.txt**
   Create `progress.txt` at project root with content:
   ```
   # Progress Log

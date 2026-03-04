@@ -22,3 +22,12 @@ This file tracks learnings across iterations.
   - All imports verified: `import edge_model; import ocr; import api` works
   - ruff check passes with all new files
 ---
+
+## Iteration 3 - Task 0.3: Create .gitignore
+- Created .gitignore with all required patterns
+- Files changed: .gitignore
+- Learnings for future iterations:
+  - pytest exit code 5 = no tests collected (expected when no test files exist yet)
+  - ruff check passes on all existing files
+  - git warnings about LF→CRLF are normal on Windows
+---
