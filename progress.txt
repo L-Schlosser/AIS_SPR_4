@@ -111,3 +111,40 @@ This file tracks learnings across iterations.
   - Images are gitignored (data/samples/**/*.png) but schemas are not
   - Phase 2 started - next is Task 2.2 (NER text sample generator)
 ---
+
+## Iteration 11 - Task 2.2: Create NER text sample generator
+- Created `scripts/generate_text_samples.py` with BIO-tagged text generators for all 3 doc types
+- Each generator has 4 layout variants (standard, compact, verbose, reordered) to simulate varied OCR output
+- 30% chance of trailing noise tokens (stamps, page numbers, etc.)
+- Output: JSONL files with 80/20 train/val split per document type
+- Helper functions: `_tokenize_and_tag()` for BIO tagging, `_add_o_tokens()` for O-tagged words
+- Files changed: scripts/generate_text_samples.py, PRD.md
+- Learnings for future iterations:
+  - ruff catches f-strings without placeholders (F541) - use plain strings instead
+  - Faker de_DE generates realistic German names/addresses/companies
+  - Token/tag alignment is critical - always assert `len(tokens) == len(ner_tags)`
+  - Generated JSONL files are gitignored (data/samples/**/*.jsonl)
+  - Next task (2.3) creates tests for both image and NER data generation
+---
+
+## Iteration 12 - Task 2.3: Create data loading and verification tests
+- Created `tests/conftest.py` with shared fixtures:
+  - sample_arztbesuch_image, sample_reisekosten_image, sample_lieferschein_image (generate 1 image in tmp dir)
+  - sample_ner_data (generates 5 NER samples per doc type in memory)
+  - schemas_dir (path to data/schemas/)
+  - all_schemas (loads all 3 schemas as dicts)
+- Created `tests/unit/test_data_generation.py` with 27 tests across 7 test classes:
+  - TestLabelSchemaValidation: labels match JSON schemas (including file-based test)
+  - TestNERTokenTagAlignment: tokens/tags same length at small and large scale
+  - TestExpectedBIOTags: all expected BIO tag types appear, valid BIO format
+  - TestAugmentation: pixel changes, dimension preservation, pixel range
+  - TestGermanLocale: dates, Dr. prefix, Praxis prefix, LS- prefix, EUR currency, Austrian VAT rates
+  - TestNERDocumentType: correct document_type field per generator
+  - TestImageGeneration: 800x1130 RGB dimensions for all 3 doc types
+- Files changed: tests/conftest.py, tests/unit/test_data_generation.py, PRD.md, progress.txt
+- Learnings for future iterations:
+  - ruff auto-fix (`--fix`) handles import sorting well — use it when I001 errors persist
+  - Don't import pytest in test files unless directly used (fixtures come from conftest)
+  - Phase 2 is now complete — all synthetic data generation and tests done
+  - Next is Phase 3: Document Classification (Task 3.1)
+---

@@ -341,7 +341,7 @@ All models ONNX-exported with INT8 quantization.
   - Include train/val split (80/20) — generate `_train.jsonl` and `_val.jsonl`
   **Validation**: `uv run python scripts/generate_text_samples.py --count 50` generates 6 JSONL files (train+val for each type). Verify: `uv run python -c "import json; data=[json.loads(l) for l in open('data/samples/arztbesuchsbestaetigung_ner_train.jsonl')]; print(len(data), 'samples'); assert len(data[0]['tokens'])==len(data[0]['ner_tags'])"`.
 
-- [ ] **Task 2.3: Create data loading and verification tests**
+- [x] **Task 2.3: Create data loading and verification tests**
   Create `tests/unit/test_data_generation.py`:
   - Test that generated label files match their JSON schemas
   - Test token/tag length alignment in NER samples
