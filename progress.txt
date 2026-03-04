@@ -594,3 +594,23 @@ This file tracks learnings across iterations.
   - optimum export produces model.onnx + config files in a directory structure
   - 349 tests pass, 23 skipped, ruff clean
 ---
+
+## Iteration 36 - Task 11.1: Create architecture documentation
+- Created `docs/architecture.md` with:
+  - System overview with full pipeline Mermaid flowchart
+  - Component descriptions for all 7 modules (preprocessor, classifier, OCR, extractors, validator, pipeline, service)
+  - Data flow diagram (Mermaid)
+  - Model specifications table (architecture, input/output, sizes, quantization)
+  - Module dependency graph (Mermaid)
+  - ONNX Runtime Mobile deployment notes for Android and iOS
+- Created `docs/model_pipeline.md` with:
+  - Step-by-step training instructions (data gen → classifier → export → NER → export)
+  - Hyperparameter tables for classifier and NER models
+  - ONNX export and quantization procedures with Mermaid diagrams
+  - How to add new document types (10-step guide)
+  - Performance benchmarks (accuracy, F1, model sizes, inference speed)
+- Files changed: docs/architecture.md, docs/model_pipeline.md, PRD.md, progress.txt
+- Learnings for future iterations:
+  - Markdown docs don't need tests or ruff — just verify they exist and are well-structured
+  - 333 unit tests pass, ruff clean
+---

@@ -820,7 +820,7 @@ All models ONNX-exported with INT8 quantization.
 
 ### Phase 11: Documentation & Final Validation
 
-- [ ] **Task 11.1: Create architecture documentation**
+- [x] **Task 11.1: Create architecture documentation**
   Create `docs/architecture.md`:
   - System overview with Mermaid diagram showing the full pipeline
   - Component descriptions (classifier, OCR, extractors, validator)
