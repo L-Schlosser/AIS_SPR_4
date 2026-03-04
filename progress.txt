@@ -165,3 +165,22 @@ This file tracks learnings across iterations.
   - Train group dependencies (torch, torchvision, sklearn) already synced from previous iterations
   - 89 total tests pass across the project in ~9s
 ---
+
+## Iteration 14 - Task 3.2: Create classification training script
+- Created `edge_model/classification/train.py` with two-phase transfer learning:
+  - `create_model()`: loads timm EfficientNet-Lite0, replaces classifier head
+  - `freeze_backbone()` / `unfreeze_all()`: toggle backbone parameter training
+  - `train_epoch()`: single training epoch with loss + accuracy tracking
+  - `validate_epoch()`: eval with per-class precision/recall metrics
+  - `train()`: full pipeline — Phase 1 (frozen backbone) → Phase 2 (full fine-tuning), saves best model + metrics.json
+  - CLI with argparse for data-dir and output-dir
+- Created `tests/unit/test_classifier_train.py` with 10 tests:
+  - TestCreateModel: output shape, num_classes, nn.Module check
+  - TestFreezeBackbone: frozen params, trainable count, unfreeze verification
+  - TestTrainEpoch: train_epoch runs, validate_epoch runs, per-class metrics structure
+- Files changed: edge_model/classification/train.py, tests/unit/test_classifier_train.py, PRD.md
+- Learnings for future iterations:
+  - ruff E741: avoid variable name `l` (ambiguous) — use `lbl` instead
+  - timm model downloaded from HuggingFace Hub on first use (~16MB for EfficientNet-Lite0)
+  - 99 total tests pass across the project in ~12s
+---

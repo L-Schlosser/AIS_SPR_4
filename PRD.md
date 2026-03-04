@@ -376,7 +376,7 @@ All models ONNX-exported with INT8 quantization.
   - Test train/val split maintains class proportions
   **Validation**: `uv run pytest tests/unit/test_classifier_dataset.py -v` — all pass.
 
-- [ ] **Task 3.2: Create classification training script**
+- [x] **Task 3.2: Create classification training script**
   Run: `uv sync --group train`
   Create `edge_model/classification/train.py`:
   - `create_model(config) -> nn.Module` — loads timm `tf_efficientnet_lite0` pretrained, replaces classifier head for 3 classes
