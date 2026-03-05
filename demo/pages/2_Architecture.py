@@ -1,152 +1,207 @@
 """Architecture page for the Edge-AI Document Processing demo."""
 
 import streamlit as st
-
-from demo.utils import setup_page
+from utils import section_header, setup_page
 
 setup_page("Architecture", "🏗️")
 
-st.title("🏗️ Architecture")
-st.write("Overview of the Edge-AI document processing pipeline.")
-
-# --- Section 1: Processing Pipeline ---
-st.header("Processing Pipeline")
-
-st.graphviz_chart(
+# ---------------------------------------------------------------------------
+# Hero
+# ---------------------------------------------------------------------------
+st.markdown(
     """
-    digraph pipeline {
-        rankdir=TD
-        node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11]
-        edge [fontname="Helvetica", fontsize=9]
-
-        A [label="Document Image\\n(JPEG/PNG)", fillcolor="#e3f2fd"]
-        B [label="Image Preprocessor\\n224×224, ImageNet norm", fillcolor="#e8f5e9"]
-        C [label="EfficientNet-Lite0\\nClassifier", fillcolor="#fff3e0"]
-        D [label="RapidOCR Engine\\nText Extraction", fillcolor="#fce4ec"]
-        E [label="Low Confidence\\nResult", fillcolor="#ffebee", style="rounded,filled,dashed"]
-        F [label="Document Type\\nRouter", shape=diamond, fillcolor="#f3e5f5"]
-        G1 [label="DistilBERT NER\\nArztbesuch", fillcolor="#e0f7fa"]
-        G2 [label="DistilBERT NER\\nReisekosten", fillcolor="#e0f7fa"]
-        G3 [label="DistilBERT NER\\nLieferschein", fillcolor="#e0f7fa"]
-        H [label="BIO Tag\\nPostprocessor", fillcolor="#f1f8e9"]
-        I [label="JSON Schema\\nValidator", fillcolor="#fff8e1"]
-        J [label="Structured JSON\\nResult", fillcolor="#e8eaf6"]
-
-        A -> B
-        B -> C
-        C -> D [label="confidence ≥ 0.7"]
-        C -> E [label="confidence < 0.7", style=dashed]
-        D -> F
-        F -> G1 [label="arztbesuch"]
-        F -> G2 [label="reisekosten"]
-        F -> G3 [label="lieferschein"]
-        G1 -> H
-        G2 -> H
-        G3 -> H
-        H -> I
-        I -> J
-    }
+    <div class="hero-container" style="padding: 2rem;">
+        <div class="hero-title" style="font-size: 2rem;">Architecture</div>
+        <div class="hero-subtitle" style="font-size: 1rem;">
+            End-to-end pipeline from document image to structured JSON output.
+        </div>
+    </div>
     """,
-    use_container_width=True,
+    unsafe_allow_html=True,
 )
 
-# --- Section 2: Pipeline Steps ---
-st.header("Pipeline Steps")
+# ---------------------------------------------------------------------------
+# Pipeline Flow — Styled Cards
+# ---------------------------------------------------------------------------
+section_header("Processing Pipeline")
 
-with st.expander("1. Image Preprocessing", expanded=False):
+pipeline_steps = [
+    ("📸", "Document Image", "JPEG/PNG", "Camera photo or scan input", "#64748B"),
+    ("🔧", "Image Preprocessor", "224x224, ImageNet norm", "Resize, normalize, CHW layout, batch dim", "#00D4FF"),
+    (
+        "🧠",
+        "EfficientNet-Lite0 Classifier",
+        "3-class softmax",
+        "Identifies document type with confidence score. Threshold: 0.7",
+        "#7C3AED",
+    ),
+    (
+        "👁️",
+        "RapidOCR Engine",
+        "Text extraction",
+        "Grayscale, adaptive threshold, text detection + recognition, region sorting",
+        "#F59E0B",
+    ),
+    (
+        "🏷️",
+        "DistilBERT NER",
+        "BIO tagging",
+        "One fine-tuned model per document type. Extracts named entities from OCR text",
+        "#10B981",
+    ),
+    (
+        "⚙️",
+        "Postprocessor",
+        "Field normalization",
+        "Date/time parsing, number formatting, type-specific field mapping",
+        "#00D4FF",
+    ),
+    (
+        "✅",
+        "JSON Schema Validator",
+        "Draft-07",
+        "Validates output against document-type-specific schemas",
+        "#7C3AED",
+    ),
+    ("📋", "Structured JSON", "ProcessingResult", "Clean, validated output for BMD Go integration", "#10B981"),
+]
+
+for i, (icon, title, badge_text, desc, color) in enumerate(pipeline_steps, 1):
+    st.markdown(
+        f"""
+        <div class="pipeline-step" style="border-left-color: {color};">
+            <span class="step-number">{i}</span>
+            <span class="step-title">{icon} {title}</span>
+            <span class="tech-badge" style="margin-left: 0.5rem; font-size: 0.72rem;">{badge_text}</span>
+            <div class="step-desc">{desc}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
+# Pipeline Detail Expanders
+# ---------------------------------------------------------------------------
+section_header("Component Details")
+
+with st.expander("1. Image Preprocessing"):
     st.markdown(
         """
 **Module:** `edge_model/inference/preprocessor.py`
 
-- Resize input image to **224×224** pixels
+- Resize input image to **224x224** pixels
 - Normalize with ImageNet mean/std: `([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])`
 - Convert HWC → CHW layout and add batch dimension
 - Output: `(1, 3, 224, 224)` float32 numpy array
 """
     )
 
-with st.expander("2. Document Classification", expanded=False):
+with st.expander("2. Document Classification"):
     st.markdown(
         """
-**Model:** EfficientNet-Lite0 (pretrained on ImageNet, fine-tuned)
+**Model:** EfficientNet-Lite0 (pretrained on ImageNet, fine-tuned for 3 classes)
 
 - **Input:** `(1, 3, 224, 224)` float32 image tensor
 - **Output:** `(1, 3)` logits → softmax → class probabilities
-- **Classes:** Arztbesuchsbestätigung, Reisekostenbeleg, Lieferschein
 - **Training:** Two-phase transfer learning (frozen backbone → full fine-tuning)
-- **Confidence threshold:** 0.7 (below → rejected as low confidence)
+- **Quantization:** Float16 — model size reduced to **6.5 MB**
+- **Confidence threshold:** 0.7 (below → rejected)
 """
     )
 
-with st.expander("3. OCR Text Extraction", expanded=False):
+with st.expander("3. OCR Text Extraction"):
     st.markdown(
         """
 **Library:** RapidOCR (PaddleOCR ONNX bundles)
 
 - **Preprocessing:** Grayscale conversion, adaptive thresholding, sharpening
-- **Engine:** Wraps RapidOCR for text region detection + text recognition
+- **Engine:** Text region detection + recognition via ONNX models
 - **Postprocessing:** Sorts regions top-to-bottom / left-to-right, merges into readable text
-- Accepts any input image size
 """
     )
 
-with st.expander("4. Named Entity Recognition (NER)", expanded=False):
+with st.expander("4. Named Entity Recognition (NER)"):
     st.markdown(
         """
 **Model:** DistilBERT-base-german-cased (one fine-tuned model per document type)
 
-- **Input:** Tokenized OCR text (max 256 tokens)
-- **Output:** BIO tag sequence per token
-- Separate model for each document type, trained on type-specific entities
-- Uses Hugging Face tokenizer for subword tokenization
+- **Input:** Tokenized OCR text (max 256 tokens, `is_split_into_words=True`)
+- **Output:** BIO tag sequence per token, collapsed to word-level via `word_ids()`
+- **Quantization:** INT8 dynamic — each model **~64 MB**
+- Separate models trained on type-specific entity labels
 """
     )
 
-with st.expander("5. Postprocessing", expanded=False):
+with st.expander("5. Postprocessing & Validation"):
     st.markdown(
         """
-**Module:** `edge_model/extraction/postprocess.py`
+**Postprocessing** (`edge_model/extraction/postprocess.py`):
+- BIO tag sequences → merged field values
+- Date parsing (DD.MM.YYYY → ISO), time parsing, number extraction
+- Type-specific postprocessors for each document type
 
-- Converts BIO tag sequences → merged field values
-- Handles multi-token entities (B-tag starts, I-tag continues)
-- Type-specific postprocessors for date/time parsing, number extraction
-- Output: structured dictionary of extracted fields
+**Schema Validation** (`edge_model/inference/validator.py`):
+- JSON Schema Draft-07 validation per document type
+- Pydantic v2 models as secondary validation layer
+- Schemas in `data/schemas/`
 """
     )
 
-with st.expander("6. Schema Validation", expanded=False):
-    st.markdown(
-        """
-**Module:** `edge_model/inference/validator.py`
+st.markdown("<br>", unsafe_allow_html=True)
 
-- Validates extracted fields against JSON Schema (Draft-07)
-- One schema per document type in `data/schemas/`
-- Ensures output correctness before returning results
-- Returns `ProcessingResult` with validation status
-"""
-    )
+# ---------------------------------------------------------------------------
+# Model Specifications
+# ---------------------------------------------------------------------------
+section_header("Model Specifications")
 
-# --- Section 3: Model Details ---
-st.header("Model Details")
-
-st.table(
-    {
-        "Model": [
-            "Classifier",
-            "NER Arztbesuch",
-            "NER Reisekosten",
-            "NER Lieferschein",
-        ],
-        "Architecture": [
-            "EfficientNet-Lite0",
-            "DistilBERT German",
-            "DistilBERT German",
-            "DistilBERT German",
-        ],
-        "Format": ["ONNX", "ONNX", "ONNX", "ONNX"],
-        "Size": ["6.5 MB", "64 MB", "64 MB", "64 MB"],
-        "Quantization": ["Float16", "INT8", "INT8", "INT8"],
-    }
+st.markdown(
+    """
+<table style="width:100%; border-collapse: collapse; font-size: 0.9rem;">
+    <thead>
+        <tr style="border-bottom: 2px solid #2D3748;">
+            <th style="padding: 12px; text-align: left; color: #94A3B8;">Model</th>
+            <th style="padding: 12px; text-align: left; color: #94A3B8;">Architecture</th>
+            <th style="padding: 12px; text-align: left; color: #94A3B8;">Format</th>
+            <th style="padding: 12px; text-align: left; color: #94A3B8;">Size</th>
+            <th style="padding: 12px; text-align: left; color: #94A3B8;">Quantization</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="border-bottom: 1px solid #1A1F2E;">
+            <td style="padding: 10px; color: #E2E8F0;">Classifier</td>
+            <td style="padding: 10px; color: #94A3B8;">EfficientNet-Lite0</td>
+            <td style="padding: 10px;"><span class="tech-badge">ONNX</span></td>
+            <td style="padding: 10px; color: #10B981; font-weight: 600;">6.5 MB</td>
+            <td style="padding: 10px;"><span class="tech-badge green-badge">Float16</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1A1F2E;">
+            <td style="padding: 10px; color: #E2E8F0;">NER Arztbesuch</td>
+            <td style="padding: 10px; color: #94A3B8;">DistilBERT German</td>
+            <td style="padding: 10px;"><span class="tech-badge">ONNX</span></td>
+            <td style="padding: 10px; color: #F59E0B; font-weight: 600;">64 MB</td>
+            <td style="padding: 10px;"><span class="tech-badge purple-badge">INT8</span></td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1A1F2E;">
+            <td style="padding: 10px; color: #E2E8F0;">NER Reisekosten</td>
+            <td style="padding: 10px; color: #94A3B8;">DistilBERT German</td>
+            <td style="padding: 10px;"><span class="tech-badge">ONNX</span></td>
+            <td style="padding: 10px; color: #F59E0B; font-weight: 600;">64 MB</td>
+            <td style="padding: 10px;"><span class="tech-badge purple-badge">INT8</span></td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; color: #E2E8F0;">NER Lieferschein</td>
+            <td style="padding: 10px; color: #94A3B8;">DistilBERT German</td>
+            <td style="padding: 10px;"><span class="tech-badge">ONNX</span></td>
+            <td style="padding: 10px; color: #F59E0B; font-weight: 600;">64 MB</td>
+            <td style="padding: 10px;"><span class="tech-badge purple-badge">INT8</span></td>
+        </tr>
+    </tbody>
+</table>
+<div style="margin-top: 1rem;">
+    <span class="tech-badge" style="font-size: 0.85rem;">Total on-device footprint: ~199 MB</span>
+</div>
+""",
+    unsafe_allow_html=True,
 )
-
-st.info("**Total on-device footprint:** ~199 MB (classifier + 3 NER extractors)")
