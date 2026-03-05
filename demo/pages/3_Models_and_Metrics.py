@@ -48,11 +48,12 @@ if classifier_metrics is None or ner_metrics is None:
 section_header("Classification Performance")
 
 if classifier_metrics:
-    # Hero gauge + metric cards
-    gauge_col, cards_col = st.columns([1, 1])
+    accuracy = classifier_metrics["accuracy"]
+    per_class = classifier_metrics["per_class"]
 
-    with gauge_col:
-        accuracy = classifier_metrics["accuracy"]
+    # Accuracy gauge — centered, moderate width
+    g1, g2, g3 = st.columns([1, 2, 1])
+    with g2:
         fig_gauge = go.Figure(
             go.Indicator(
                 mode="gauge+number",
@@ -77,30 +78,30 @@ if classifier_metrics:
                 title={"text": "Overall Accuracy", "font": {"size": 16, "color": "#94A3B8"}},
             )
         )
-        dark_plotly_layout(fig_gauge, height=300)
+        dark_plotly_layout(fig_gauge, height=280)
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-    with cards_col:
-        st.markdown("<br>", unsafe_allow_html=True)
-        per_class = classifier_metrics["per_class"]
-        pcols = st.columns(3)
-        class_icons = {"arztbesuchsbestaetigung": "🏥", "lieferschein": "📦", "reisekostenbeleg": "🧾"}
-        class_colors = {"arztbesuchsbestaetigung": "cyan", "lieferschein": "green", "reisekostenbeleg": "purple"}
-        for col, c_name in zip(pcols, per_class):
-            with col:
-                f1 = per_class[c_name]["f1"]
-                icon = class_icons.get(c_name, "📄")
-                color = class_colors.get(c_name, "cyan")
-                st.markdown(
-                    metric_card(icon, f"{f1:.1%}", f"F1 {c_name[:10]}...", color),
-                    unsafe_allow_html=True,
-                )
-        st.markdown(
-            f"""<div style="text-align: center; margin-top: 1rem;">
-                <span class="tech-badge">Evaluated on {classifier_metrics['total_images']} images</span>
-            </div>""",
-            unsafe_allow_html=True,
-        )
+    # Per-class F1 cards — full width row
+    class_icons = {"arztbesuchsbestaetigung": "🏥", "lieferschein": "📦", "reisekostenbeleg": "🧾"}
+    class_labels = {"arztbesuchsbestaetigung": "Arztbesuch", "lieferschein": "Lieferschein", "reisekostenbeleg": "Reisekosten"}
+    class_colors = {"arztbesuchsbestaetigung": "cyan", "lieferschein": "green", "reisekostenbeleg": "purple"}
+    pcols = st.columns(3)
+    for col, c_name in zip(pcols, per_class):
+        with col:
+            f1 = per_class[c_name]["f1"]
+            icon = class_icons.get(c_name, "📄")
+            color = class_colors.get(c_name, "cyan")
+            label = class_labels.get(c_name, c_name[:12])
+            st.markdown(
+                metric_card(icon, f"{f1:.1%}", f"F1 {label}", color),
+                unsafe_allow_html=True,
+            )
+    st.markdown(
+        f"""<div style="text-align: center; margin-top: 1rem;">
+            <span class="tech-badge">Evaluated on {classifier_metrics['total_images']} images</span>
+        </div>""",
+        unsafe_allow_html=True,
+    )
 
     # Confusion matrix + Per-class bar chart
     cm_col, bar_col = st.columns(2)
@@ -120,7 +121,7 @@ if classifier_metrics:
                 textfont={"color": "#E2E8F0", "size": 14},
             )
         )
-        fig_cm.update_layout(xaxis_title="Predicted", yaxis_title="Actual")
+        fig_cm.update_layout(xaxis_title="Predicted", yaxis_title="Actual", yaxis_autorange="reversed")
         dark_plotly_layout(fig_cm, height=380)
         st.plotly_chart(fig_cm, use_container_width=True)
 

@@ -44,10 +44,21 @@ _DARK_CSS = """
     ::-webkit-scrollbar-thumb {background: #2D3748; border-radius: 4px;}
     ::-webkit-scrollbar-thumb:hover {background: #4A5568;}
 
-    /* Font */
+    /* Font + global text color */
     html, body, [class*="css"] {
         font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        color: #E2E8F0;
     }
+
+    /* Force all Streamlit text elements to be light */
+    .stMarkdown, .stMarkdown p, .stMarkdown li, .stMarkdown span,
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4,
+    .stMarkdown h5, .stMarkdown h6,
+    .stText, label, .stSelectbox label, .stCheckbox label,
+    [data-testid="stWidgetLabel"] {
+        color: #E2E8F0 !important;
+    }
+    .stMarkdown a { color: #00D4FF !important; }
 
     /* Hero section */
     .hero-container {
@@ -104,7 +115,7 @@ _DARK_CSS = """
         background: #1A1F2E;
         border: 1px solid #2D3748;
         border-radius: 12px;
-        padding: 1.5rem;
+        padding: 1rem 0.6rem;
         text-align: center;
         transition: all 0.3s ease;
         position: relative;
@@ -116,15 +127,15 @@ _DARK_CSS = """
         transform: translateY(-2px);
     }
     .metric-card .metric-value {
-        font-size: 2.5rem;
+        font-size: clamp(1rem, 2vw, 1.6rem);
         font-weight: 800;
-        margin: 0.5rem 0;
+        margin: 0.3rem 0;
     }
     .metric-card .metric-label {
-        font-size: 0.9rem;
+        font-size: clamp(0.55rem, 1vw, 0.78rem);
         color: #94A3B8;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
     }
     .metric-card .metric-icon {
         font-size: 1.5rem;

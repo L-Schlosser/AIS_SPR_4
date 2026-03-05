@@ -29,10 +29,10 @@ st.markdown(
 # ---------------------------------------------------------------------------
 cols = st.columns(4)
 cards = [
-    ("📄", "3", "Document Types", "cyan"),
+    ("📄", "3", "Doc Types", "cyan"),
     ("🧠", "4", "ONNX Models", "purple"),
-    ("🎯", "98.4%", "Classification Accuracy", "green"),
-    ("📦", "~199 MB", "Total Model Size", "amber"),
+    ("🎯", "98.4%", "Accuracy", "green"),
+    ("📦", "~199 MB", "Model Size", "amber"),
 ]
 for col, (icon, value, label, color) in zip(cols, cards):
     with col:
