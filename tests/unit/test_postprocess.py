@@ -50,7 +50,7 @@ class TestBioTagsToFields:
         tokens = ["Muster", "##mann"]
         tags = ["B-PATIENT", "I-PATIENT"]
         result = bio_tags_to_fields(tokens, tags)
-        assert result == {"patient": "Muster mann"}
+        assert result == {"patient": "Mustermann"}
 
     def test_empty_input(self):
         result = bio_tags_to_fields([], [])
@@ -86,7 +86,7 @@ class TestBioTagsToFields:
         tokens = ["Arzt", "##praxis", "##zentrum"]
         tags = ["B-FACILITY", "I-FACILITY", "I-FACILITY"]
         result = bio_tags_to_fields(tokens, tags)
-        assert result == {"facility": "Arzt praxis zentrum"}
+        assert result == {"facility": "Arztpraxiszentrum"}
 
 
 # ---------------------------------------------------------------------------

@@ -160,7 +160,7 @@ uv run ruff check .
 │   ├── engine.py               # RapidOCR wrapper
 │   ├── preprocessing.py        # Grayscale, thresholding, deskew
 │   └── postprocessing.py       # Region sorting + text merging
-├── mobile_app/                 # Demo CLI application
+├── mobile_app/                 # Mobile client integration layer
 │   └── src/
 │       ├── model_manager.py    # ONNX model file management
 │       └── app.py              # CLI: process, info, batch, demo
@@ -177,6 +177,7 @@ uv run ruff check .
 ├── docs/
 │   ├── architecture.md         # System architecture + Mermaid diagrams
 │   └── model_pipeline.md       # Training + export procedures
+├── results/                    # Example JSON outputs per document type
 ├── config.yaml                 # Pipeline configuration (model paths)
 └── pyproject.toml              # Dependencies managed via uv
 ```
@@ -206,13 +207,14 @@ uv run ruff check .
 
 ## Team
 
-| Role | Member |
-|---|---|
-| Project Lead | - |
-| ML Engineering | - |
-| Mobile Integration | - |
-| Testing & QA | - |
+| Contributor | Role | Responsibility |
+|---|---|---|
+| Binder Celina | | |
+| Eichsteininger Natalie | | |
+| Hysenlli Klevi | | |
+| Schlosser Lorenz Johannes | | |
+| Suchomel Raphael | | |
 
 ## License
 
-This project is developed as part of a student project (Studentprojekt) at AIS.
+This project is intended for research and educational purposes.

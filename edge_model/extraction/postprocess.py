@@ -9,6 +9,8 @@ from collections.abc import Callable
 def bio_tags_to_fields(tokens: list[str], tags: list[str]) -> dict[str, str]:
     """Merge B-/I- tagged tokens into field values.
 
+    Handles subword tokens (## prefix) by concatenating without spaces.
+
     Args:
         tokens: List of text tokens (may include ## subword prefixes).
         tags: List of BIO tags aligned with tokens.
@@ -24,12 +26,13 @@ def bio_tags_to_fields(tokens: list[str], tags: list[str]) -> dict[str, str]:
     current_field: str | None = None
 
     for token, tag in zip(tokens, tags):
-        clean_token = _clean_subword(token)
+        clean = _clean_subword(token)
+        is_subword = token.startswith("##")
 
         if tag.startswith("B-"):
             field_name = tag[2:].lower()
             if field_name not in fields:
-                fields[field_name] = []
+                fields[field_name] = [clean]
                 current_field = field_name
             else:
                 # Duplicate B- tag for same field — keep first occurrence
@@ -37,16 +40,15 @@ def bio_tags_to_fields(tokens: list[str], tags: list[str]) -> dict[str, str]:
         elif tag.startswith("I-") and current_field is not None:
             field_name = tag[2:].lower()
             if field_name == current_field:
-                fields[current_field].append(clean_token)
+                if is_subword and fields[current_field]:
+                    # Append without space for subword continuations
+                    fields[current_field][-1] += clean
+                else:
+                    fields[current_field].append(clean)
             else:
                 current_field = None
         else:
             current_field = None
-
-        if tag.startswith("B-"):
-            field_name = tag[2:].lower()
-            if len(fields.get(field_name, [])) == 0:
-                fields[field_name] = [clean_token]
 
     return {k: " ".join(v).strip() for k, v in fields.items() if v}
 

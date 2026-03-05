@@ -784,3 +784,114 @@ This file tracks learnings across iterations.
   - 372 total tests (333 unit + 25 integration + 14 e2e) all pass
   - Demo app has 5 pages: Home, Live Demo, Architecture, Models & Metrics, About
 ---
+
+## Iteration 48 - Task 1.1 (Dark Theme): Rewrite demo/utils.py with dark theme CSS
+- Replaced demo/utils.py with full dark AI theme CSS system
+- Added COLORS dict, _DARK_CSS with 400+ lines of custom CSS, reusable helper functions
+- New functions: metric_card(), section_header(), dark_plotly_layout()
+- Files changed: demo/utils.py
+- Learnings for future iterations:
+  - PRD now uses "Dark AI Tech Theme" redesign — 9 tasks across 9 phases
+  - No checkbox markers in PRD — track completion via progress.txt iterations
+  - All 372 tests still pass after utils.py rewrite (pages import from utils)
+  - CSS classes defined: hero-container, metric-card, feature-card, pipeline-step, tech-badge, doc-card, field-card, team-card, stat-row, custom-footer
+---
+
+## Iteration 49 - Task 2.1 (Dark Theme): Rewrite Home.py with hero section and dark cards
+- Replaced Home.py with full dark-themed landing page
+- Hero section with gradient badge, title, subtitle with colored stats
+- 4 metric cards row (Document Types, ONNX Models, Accuracy, Model Size) using metric_card()
+- 8-step pipeline walkthrough using pipeline-step CSS class
+- 3 feature highlight cards (Privacy, Speed, Accuracy) using feature-card CSS class
+- 3 document type cards with color-coded borders using doc-card CSS class
+- Updated sidebar with navigation list and quick start code
+- Files changed: demo/Home.py
+- Learnings for future iterations:
+  - metric_card() takes (icon, value, label, color) — color is "cyan"/"purple"/"green"/"amber"
+  - section_header() renders styled h2 with underline accent
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 50 - Task 3.1 (Dark Theme): Rewrite 1_Live_Demo.py with dark-themed results
+- Replaced 1_Live_Demo.py with dark-themed version per PRD spec
+- Hero section with hero-container CSS class instead of st.title
+- section_header() for "Input Document" and "Extraction Results" headings
+- Two-column layout with gap="large"
+- Color-coded metric-card for document type result (cyan/purple/green per type)
+- tech-badge elements for confidence and processing time
+- field-card styled cards for extracted fields instead of plain markdown
+- feature-card placeholder when no image uploaded
+- Files changed: demo/pages/1_Live_Demo.py
+- Learnings for future iterations:
+  - section_header() imported from utils alongside setup_page
+  - type_colors dict maps doc type string to hex color for border styling
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 51 - Task 4.1 (Dark Theme): Rewrite 2_Architecture.py with pipeline cards and model specs
+- Replaced 2_Architecture.py with dark-themed version per PRD spec
+- Hero section with hero-container CSS class
+- section_header() for section headings
+- pipeline_steps list with styled pipeline-step cards, step-number, step-title, tech-badge, step-desc
+- Component detail expanders for each pipeline stage
+- HTML table for model specifications with tech-badge and colored badges
+- Removed old graphviz_chart and st.table in favor of styled HTML
+- Files changed: demo/pages/2_Architecture.py
+- Learnings for future iterations:
+  - pipeline-step CSS class with border-left-color for colored left border
+  - green-badge and purple-badge CSS classes for quantization badges
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 52 - Task 5.1 (Dark Theme): Rewrite 3_Models_and_Metrics.py with gauge charts and styled tables
+- Replaced 3_Models_and_Metrics.py with dark-themed version per PRD spec
+- Hero section with hero-container CSS
+- Classification: gauge chart for accuracy + 3 metric_card F1 cards + confusion matrix heatmap + per-class bar chart
+- NER: 3 gauge charts per doc type + entity-level HTML tables with color-coded F1
+- Model sizes: metric_card total + horizontal bar chart with dark_plotly_layout, fallback cards
+- Removed plotly.express dependency, uses only plotly.graph_objects
+- Files changed: demo/pages/3_Models_and_Metrics.py
+- Learnings for future iterations:
+  - dark_plotly_layout() handles all Plotly theming consistently
+  - metric_card() returns HTML string, must wrap with unsafe_allow_html=True
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 53 - Task 6.1 (Dark Theme): Create demo/pages/5_Tech_Stack.py
+- Created new Tech Stack & Methodology page per PRD spec
+- Hero section, 6 technology cards in 2x3 grid, training methodology (classification vs NER), synthetic data pipeline stats, engineering practices badges
+- Fixed 2 ruff E501 line-too-long errors by splitting long tuples
+- Files changed: demo/pages/5_Tech_Stack.py (new)
+- Learnings for future iterations:
+  - Long tuple literals in tech_items need multi-line formatting for ruff E501
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 54 - Task 7.1 (Dark Theme): Rewrite About page with team cards and stats
+- Deleted old demo/pages/4_About.py, created demo/pages/6_About.py
+- Hero section, 5 team member cards with avatars, project stats (metric_card), getting started guide with install/test columns, project structure tree, disclaimer
+- Fixed 1 ruff E501 in project structure tree (shortened inference comment)
+- Files changed: demo/pages/4_About.py (deleted), demo/pages/6_About.py (new)
+- Learnings for future iterations:
+  - Unicode box-drawing chars in st.code strings count toward line length for ruff
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 55 - Task 8.1 (Dark Theme): Fix .gitignore to exclude _label.json files
+- Added `data/samples/**/*_label.json` after the existing `data/samples/**/*.jsonl` line
+- Files changed: .gitignore
+- Learnings for future iterations:
+  - The _label.json files are training artifacts that shouldn't be committed
+  - All 372 tests pass, ruff clean
+---
+
+## Iteration 56 - Task 9.1 (Dark Theme): Run full test suite and lint check
+- Ran `uv run ruff check demo/ --fix` — all checks passed
+- Ran `uv run pytest tests/ -v --tb=short` — 372 passed, 39 warnings in 195.78s
+- Committed final state with all dark theme redesign changes
+- Files changed: PRD.md, README.md, edge_model/extraction/postprocess.py, edge_model/inference/extractor_inference.py, progress.txt, pyproject.toml, tests/unit/test_postprocess.py, uv.lock, demo/__init__.py, docs/plans/
+- Learnings for future iterations:
+  - All 9 phases of the dark theme redesign PRD are now complete
+  - The pin_memory warnings from torch dataloader are benign (no GPU accelerator)
+  - Full test suite takes ~3 minutes on Windows
+---

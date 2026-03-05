@@ -7,7 +7,7 @@ import onnxruntime as ort
 from transformers import DistilBertTokenizerFast
 
 from edge_model.extraction.labels import get_id2label
-from edge_model.extraction.postprocess import POSTPROCESSORS, bio_tags_to_fields
+from edge_model.extraction.postprocess import POSTPROCESSORS
 
 
 class ExtractorInference:
@@ -29,19 +29,28 @@ class ExtractorInference:
     def extract(self, text: str) -> dict[str, str]:
         """Extract raw NER fields from text.
 
+        Matches training tokenization by pre-splitting into words and using
+        is_split_into_words=True. Uses word_ids() to collapse subword
+        predictions back to word-level, then groups B-/I- tagged words.
+
         Args:
             text: Input text (typically OCR output).
 
         Returns:
             Dict mapping field names to extracted values.
         """
+        # Pre-split into words to match training tokenization
+        words = text.split()
+        if not words:
+            return {}
+
         encoding = self._tokenizer(
-            text,
+            words,
+            is_split_into_words=True,
             return_tensors="np",
             padding="max_length",
             truncation=True,
             max_length=self._max_length,
-            return_offsets_mapping=True,
         )
 
         input_ids = encoding["input_ids"].astype(np.int64)
@@ -54,20 +63,50 @@ class ExtractorInference:
 
         tag_ids = np.argmax(logits, axis=-1)[0]
 
-        # Convert IDs to BIO tags, skipping special tokens
-        tokens: list[str] = []
-        tags: list[str] = []
-        offset_mapping = encoding["offset_mapping"][0]
+        # Collapse subword predictions to word-level using word_ids
+        # (same alignment as training: first subword carries the label)
+        word_ids = encoding.word_ids(batch_index=0)
+        word_tags: list[str] = ["O"] * len(words)
+        seen_words: set[int | None] = set()
 
-        for idx, (tag_id, offset) in enumerate(zip(tag_ids, offset_mapping)):
-            # Skip special tokens ([CLS], [SEP], [PAD])
-            if offset[0] == 0 and offset[1] == 0:
+        for idx, word_id in enumerate(word_ids):
+            if word_id is None or word_id in seen_words:
                 continue
-            token = self._tokenizer.convert_ids_to_tokens(int(input_ids[0, idx]))
-            tokens.append(token)
-            tags.append(self._id2label.get(int(tag_id), "O"))
+            seen_words.add(word_id)
+            if word_id < len(words):
+                word_tags[word_id] = self._id2label.get(int(tag_ids[idx]), "O")
 
-        return bio_tags_to_fields(tokens, tags)
+        # Group consecutive B-/I- tagged words into field values
+        fields: dict[str, str] = {}
+        current_field: str | None = None
+        current_words: list[str] = []
+
+        for word, tag in zip(words, word_tags):
+            if tag.startswith("B-"):
+                # Save previous field
+                if current_field and current_field not in fields and current_words:
+                    fields[current_field] = " ".join(current_words)
+                current_field = tag[2:].lower()
+                current_words = [word]
+            elif tag.startswith("I-") and current_field:
+                if tag[2:].lower() == current_field:
+                    current_words.append(word)
+                else:
+                    if current_field not in fields and current_words:
+                        fields[current_field] = " ".join(current_words)
+                    current_field = None
+                    current_words = []
+            else:
+                if current_field and current_field not in fields and current_words:
+                    fields[current_field] = " ".join(current_words)
+                current_field = None
+                current_words = []
+
+        # Save last field
+        if current_field and current_field not in fields and current_words:
+            fields[current_field] = " ".join(current_words)
+
+        return fields
 
     def extract_and_postprocess(self, text: str, document_type: str) -> dict:
         """Extract fields and apply document-type-specific postprocessing.
