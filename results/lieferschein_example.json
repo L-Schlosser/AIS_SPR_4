@@ -1,0 +1,25 @@
+{
+  "document_type": "lieferschein",
+  "fields": {
+    "document_type": "lieferschein",
+    "delivery_note_number": "LS-20241105-0042",
+    "delivery_date": "2024-11-05",
+    "sender": {
+      "name": "TechParts GmbH",
+      "address": "Industriestraße 12, 4600 Wels"
+    },
+    "recipient": {
+      "name": "BMD Systemhaus GmbH",
+      "address": "Sierninger Str. 190, 4400 Steyr"
+    },
+    "order_number": "PO-2024-1587",
+    "items": [
+      { "description": "USB-C Kabel 2m", "quantity": 50, "unit": "Stück" },
+      { "description": "Docking Station Pro", "quantity": 10, "unit": "Stück" },
+      { "description": "Displayschutzfolie 13\"", "quantity": 25, "unit": "Stück" }
+    ],
+    "total_weight": "8.5 kg"
+  },
+  "confidence": 0.92,
+  "raw_text": "LIEFERSCHEIN\n\nLS-20241105-0042\nDatum: 05.11.2024\n\nAbsender: TechParts GmbH, Industriestraße 12, 4600 Wels\nEmpfänger: BMD Systemhaus GmbH, Sierninger Str. 190, 4400 Steyr\n\nBestellnummer: PO-2024-1587\n\nPos  Beschreibung              Menge  Einheit\n1    USB-C Kabel 2m            50     Stück\n2    Docking Station Pro       10     Stück\n3    Displayschutzfolie 13\"    25     Stück\n\nGesamtgewicht: 8.5 kg"
+}

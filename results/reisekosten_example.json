@@ -1,0 +1,18 @@
+{
+  "document_type": "reisekostenbeleg",
+  "fields": {
+    "document_type": "reisekostenbeleg",
+    "vendor_name": "Hotel Sacher Wien",
+    "vendor_address": "Philharmoniker Str. 4, 1010 Wien",
+    "date": "2024-10-22",
+    "amount": 189.50,
+    "currency": "EUR",
+    "vat_rate": 10.0,
+    "vat_amount": 17.23,
+    "category": "hotel",
+    "description": "Übernachtung Geschäftsreise",
+    "receipt_number": "RG-2024-08421"
+  },
+  "confidence": 0.94,
+  "raw_text": "RECHNUNG\n\nHotel Sacher Wien\nPhilharmoniker Str. 4, 1010 Wien\n\nDatum: 22.10.2024\nRechnungsnummer: RG-2024-08421\n\nÜbernachtung Geschäftsreise\nNetto: 172,27 EUR\nMwSt 10%: 17,23 EUR\nGesamt: 189,50 EUR"
+}
