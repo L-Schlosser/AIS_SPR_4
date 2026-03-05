@@ -1,391 +1,220 @@
-# Edge-AI Based Document Processing for Mobile Applications
+# Edge-AI Document Processing for BMD Go
 
-## 1. Project Description
+On-device document classification and field extraction pipeline for the BMD Go mobile app. Processes three German business document types entirely on-device using ONNX Runtime.
 
-This project addresses the challenge of performing document classification and structured information extraction directly on mobile devices. While large-scale language models demonstrate strong performance in document understanding tasks, their computational demands typically prevent deployment on resource-constrained hardware such as smartphones.
+## Architecture Overview
 
-The target use case is the **BMD Go** mobile application, where users can upload heterogeneous document types, including but not limited to:
-
-* Medical visit confirmations
-* Business travel expense receipts
-* Delivery and logistics documents
-
-The overarching product goal is to enable a **unified document upload interface**, independent of the document type. To achieve this, the system performs automated document recognition and extracts relevant key fields locally on the device.
-
-The solution follows an Edge-AI approach, prioritizing:
-
-* On-device inference
-* Low latency
-* Data privacy
-* Modular extensibility
-
-Since the input consists of camera images or scans, optical character recognition (OCR) is required. However, OCR is treated as an optional extension, whereas the main focus lies on local document classification and targeted field extraction.
-
----
-
-## 2. System Objectives
-
-* Design a pipeline for on-device document analysis
-* Implement document type classification
-* Implement structured data extraction based on document category
-* Produce standardized machine-readable outputs
-* Maintain a modular architecture to allow future expansion (e.g., OCR integration)
-* Avoid dependency on cloud-based inference services
-
----
-
-## 3. Processing Pipeline
-
-The conceptual workflow is defined as:
-
-```
-Image Input  
-   ↓  
-Preprocessing  
-   ↓  
-Document Classification  
-   ↓  
-Document-Specific Field Extraction  
-   ↓  
-Structured Output (JSON)
+```mermaid
+flowchart TD
+    A[Document Image] --> B[Image Preprocessor]
+    B --> C[EfficientNet-Lite0 Classifier]
+    C -->|confidence >= 0.7| D[RapidOCR Engine]
+    C -->|confidence < 0.7| E[Low Confidence Result]
+    D --> F{Document Type?}
+    F -->|arztbesuchsbestaetigung| G1[DistilBERT NER]
+    F -->|reisekostenbeleg| G2[DistilBERT NER]
+    F -->|lieferschein| G3[DistilBERT NER]
+    G1 --> H[BIO Tag Postprocessor]
+    G2 --> H
+    G3 --> H
+    H --> I[JSON Schema Validator]
+    I --> J[Structured JSON Output]
 ```
 
-Optional extension:
+## Supported Document Types
 
+| Document Type | Description | Key Fields |
+|---|---|---|
+| **Arztbesuchsbestaetigung** | Medical visit confirmation | Patient name, doctor, facility, date, time, duration |
+| **Reisekostenbeleg** | Travel expense receipt | Vendor, date, amount, currency, VAT, category |
+| **Lieferschein** | Delivery note | Delivery number, date, sender, recipient, items |
+
+### Example Output (Arztbesuchsbestaetigung)
+
+```json
+{
+  "document_type": "arztbesuchsbestaetigung",
+  "patient_name": "Max Mustermann",
+  "doctor_name": "Dr. Anna Schmidt",
+  "facility_name": "Praxis am Marktplatz",
+  "facility_address": "Hauptstr. 12, 1010 Wien",
+  "visit_date": "2024-03-15",
+  "visit_time": "10:30",
+  "duration_minutes": 45,
+  "confidence": 0.94
+}
 ```
-Image → OCR → Text → Classification → Extraction
+
+## Quick Start
+
+```bash
+# Install base + dev dependencies
+uv sync --group dev
+
+# Run the demo (generates sample images and processes them)
+uv run python -m mobile_app.src.app demo
+
+# Show model info
+uv run python -m mobile_app.src.app info
 ```
 
----
+## Full Setup
 
-## 4. Repository Structure
+```bash
+# Install all dependency groups
+uv sync --group dev --group train --group ocr --group viz
+
+# Generate training data (750 images + 4500 NER text samples)
+uv run python scripts/generate_samples.py --count 250 --output-dir data/samples
+uv run python scripts/generate_text_samples.py --count 1500 --output-dir data/samples
+```
+
+## Training Models from Scratch
+
+### 1. Train Document Classifier
+
+```bash
+uv run python -m edge_model.classification.train \
+    --data-dir data/samples \
+    --output-dir edge_model/classification/models
+```
+
+### 2. Export Classifier to ONNX
+
+```bash
+uv run python -m edge_model.classification.export_onnx \
+    --model-path edge_model/classification/models/best_model.pt \
+    --output-path edge_model/classification/models/classifier.onnx
+```
+
+### 3. Train NER Extraction Models (one per document type)
+
+```bash
+for doctype in arztbesuchsbestaetigung reisekostenbeleg lieferschein; do
+    uv run python -m edge_model.extraction.train \
+        --document-type $doctype \
+        --train-path data/samples/${doctype}_ner_train.jsonl \
+        --val-path data/samples/${doctype}_ner_val.jsonl \
+        --output-dir edge_model/extraction/models/${doctype%bestaetigung}
+done
+```
+
+### 4. Export NER Models to ONNX
+
+```bash
+for model_dir in arztbesuch reisekosten lieferschein; do
+    uv run python -m edge_model.extraction.export_onnx \
+        --model-dir edge_model/extraction/models/$model_dir \
+        --output-dir edge_model/extraction/models/$model_dir/onnx
+done
+```
+
+## Running Tests
+
+```bash
+# Unit tests
+uv run pytest tests/unit/ -v
+
+# Integration tests (requires trained models)
+uv run pytest tests/integration/ -v -m integration
+
+# End-to-end tests (requires all models)
+uv run pytest tests/e2e/ -v -m e2e
+
+# Full suite
+uv run pytest tests/ -v
+
+# Linting
+uv run ruff check .
+```
+
+## Project Structure
 
 ```
 .
-├── data/                 # Sample data and output schemas
-│   ├── samples/
-│   └── schemas/
-│
-├── edge-model/           # ML models and inference logic
-│   ├── classification/
-│   ├── extraction/
-│   └── inference/
-│
-├── mobile-app/           # Mobile client integration layer
+├── api/                        # Service layer
+│   ├── models.py               # Pydantic data models + DocumentType enum
+│   └── service.py              # DocumentService orchestrator
+├── edge_model/
+│   ├── classification/         # Document classifier
+│   │   ├── config.py           # ClassificationConfig
+│   │   ├── dataset.py          # Image dataset + transforms
+│   │   ├── train.py            # Two-phase transfer learning
+│   │   ├── export_onnx.py      # ONNX export + float16 quantization
+│   │   └── validate.py         # ONNX model validation
+│   ├── extraction/             # NER field extraction
+│   │   ├── labels.py           # BIO tag definitions per doc type
+│   │   ├── config.py           # ExtractionConfig
+│   │   ├── dataset.py          # NER dataset with subword alignment
+│   │   ├── train.py            # HuggingFace Trainer-based NER training
+│   │   ├── postprocess.py      # BIO tags → structured fields
+│   │   └── export_onnx.py      # ONNX export + INT8 quantization
+│   └── inference/              # Runtime inference
+│       ├── preprocessor.py     # Image preprocessing (ImageNet normalization)
+│       ├── classifier_inference.py  # ONNX classifier wrapper
+│       ├── extractor_inference.py   # ONNX NER wrapper
+│       ├── validator.py        # JSON schema validation
+│       ├── config.py           # PipelineConfig + YAML loader
+│       └── pipeline.py         # Full pipeline orchestrator
+├── ocr/                        # OCR module
+│   ├── engine.py               # RapidOCR wrapper
+│   ├── preprocessing.py        # Grayscale, thresholding, deskew
+│   └── postprocessing.py       # Region sorting + text merging
+├── mobile_app/                 # Mobile client integration layer
 │   └── src/
-│
-├── ocr/                  # OCR module (optional extension)
-│
-├── api/                  # Interfaces between application and ML pipeline
-│
-├── scripts/              # Utility and automation scripts
-│
-├── tests/                # Unit and integration tests
-│
-├── docs/                 # Technical documentation
-│   ├── architecture.md
-│   └── model_pipeline.md
-│
-├── README.md
-└── .gitignore
+│       ├── model_manager.py    # ONNX model file management
+│       └── app.py              # CLI: process, info, batch, demo
+├── scripts/
+│   ├── generate_samples.py     # Synthetic document image generator
+│   └── generate_text_samples.py # BIO-tagged NER text generator
+├── data/
+│   ├── schemas/                # JSON schemas for output validation
+│   └── samples/                # Generated training data (gitignored)
+├── tests/
+│   ├── unit/                   # 333+ unit tests
+│   ├── integration/            # OCR + model integration tests
+│   └── e2e/                    # Full pipeline end-to-end tests
+├── docs/
+│   ├── architecture.md         # System architecture + Mermaid diagrams
+│   └── model_pipeline.md       # Training + export procedures
+├── results/                    # Example JSON outputs per document type
+├── config.yaml                 # Pipeline configuration (model paths)
+└── pyproject.toml              # Dependencies managed via uv
 ```
 
----
+## Technology Stack
 
-## 5. Core Components
+| Component | Technology | Purpose |
+|---|---|---|
+| **Classifier** | EfficientNet-Lite0 (timm) | Document type classification |
+| **OCR** | RapidOCR (PaddleOCR ONNX) | Text extraction from images |
+| **NER Extractor** | DistilBERT German (transformers) | Named entity recognition for field extraction |
+| **Runtime** | ONNX Runtime | Cross-platform model inference |
+| **Quantization** | Float16 (classifier), INT8 (NER) | Model size reduction |
+| **Data Models** | Pydantic v2 | Input/output validation |
+| **Schema Validation** | jsonschema (Draft-07) | Output structure validation |
+| **Package Manager** | uv | Fast Python dependency management |
+| **Linting** | Ruff | Code quality enforcement |
+| **Testing** | pytest | Unit, integration, and e2e tests |
 
-### 5.1 Document Classification
+## Model Sizes
 
-Identifies the category of the uploaded document (e.g., receipt, medical confirmation, delivery note).
+| Model | Format | Size |
+|---|---|---|
+| EfficientNet-Lite0 Classifier | ONNX Float16 | 6.5 MB |
+| DistilBERT NER (per doc type) | ONNX INT8 | 64 MB |
+| **Total (all 4 models)** | | **~199 MB** |
 
-### 5.2 Information Extraction
+## Team
 
-Extracts predefined key fields based on the detected document type, such as:
+| Contributor | Role | Responsibility |
+|---|---|---|
+| Binder Celina | | |
+| Eichsteininger Natalie | | |
+| Hysenlli Klevi | | |
+| Schlosser Lorenz Johannes | | |
+| Suchomel Raphael | | |
 
-* Date and time
-* Monetary values
-* Identifiers
-* Issuing entity
-
-### 5.3 Optical Character Recognition (Extension)
-
-Transforms visual document content into textual representations for downstream processing.
-
-
----
-
-## 6. Data Management
-
-* No real or personally identifiable user data is included in this repository
-* Only anonymized or synthetic samples are stored
-* Raw datasets must be excluded from version control
-
----
-
-## 7. Testing and Validation
-
-The `tests/` directory contains:
-
-* Classification validation tests
-* Field extraction tests
-* End-to-end inference tests
-
-All outputs are validated against the schemas defined in `data/schemas/`.
-
----
-
-## 8. Intended Roles
-
-| Contibuter                 | Role                       | Responsibility                     |
-| -------------------------- | -------------------------- | ---------------------------------- |
-| Celina Binder              |                            |                                    |
-| Eichsteininger Natalie     |                            |                                    |
-| Hysenlli Klevi             |                            |                                    |
-| Schlosser Lorenz Johannes  |                            |                                    |
-| Suchomel Raphael           |                            |                                    |
-
----
-
-## 9. Future Work
-
-* Extension to additional document categories
-* Performance optimization for mobile hardware
-* Multilingual document support
-* Full OCR integration
-* Incremental model updates
-
-
----
-
-## 10. License
+## License
 
 This project is intended for research and educational purposes.
-
-
-
-
-
-
-
-
-# Setup & Contribution Guide
-
-## Contributors
-
-* **Binder Celina Anna**
-* **Eichsteininger Natalie**
-* **Hysenlli Klevi**
-* **Schlosser Lorenz Johannes**
-* **Suchomel Raphael**
-
-This guide explains how to set up the project, manage dependencies, and contribute in a structured way.
-
----
-
-## Clone the repository
-
-```bash
-git clone https://github.com/L-Schlosser/AIS_SPR_4.git
-cd AIS_SPR_4
-```
-
----
-
-## Project Dependencies & Environment Setup
-
-This project uses **uv + pyproject.toml** for dependency management. Dependency groups allow installing only the components you need:
-
-* **Base dependencies**: core functionality and scripts
-* **OCR module**: Optical Character Recognition for document processing
-* **Visualization tools**: plotting and analysis tools
-
-This keeps environments **clean, conflict-free, and fast**, and simplifies collaboration.
-
----
-
-### Installing Dependencies
-
-**Base dependencies (recommended for general users):**
-
-```bash
-uv sync
-```
-
-**OCR module:**
-
-```bash
-uv sync --group ocr
-```
-
-**Visualization tools:**
-
-```bash
-uv sync --group viz
-```
-
-**Multiple groups at once:**
-
-```bash
-uv sync --group ocr --group viz
-```
-
-**All groups (use only if necessary):**
-
-```bash
-uv sync --all-groups
-```
-
----
-
-### Adding New Dependencies
-
-Dependencies are tracked in **pyproject.toml**.
-
-* Add a package to **base dependencies**:
-
-```bash
-uv add PACKAGE
-```
-
-* Add a package to a **specific group**:
-
-```bash
-uv add PACKAGE --group ocr
-uv add PACKAGE --group viz
-```
-
----
-
-### Checking Installed Packages
-
-* List all installed packages:
-
-```bash
-uv pip list
-```
-
-* View available dependency groups:
-
-```bash
-uv tree
-```
-
----
-
-### Python File Guidelines
-
-* All Python code **must use `.py` files**
-* Filenames should be **lowercase and descriptive**, e.g.:
-
-```text
-document_classifier.py
-ocr_pipeline.py
-data_loader.py
-```
-
----
-
-### Summary Table
-
-| Task                        | Command                                 |
-| --------------------------- | --------------------------------------- |
-| Install base deps           | `uv sync`                               |
-| Install OCR module          | `uv sync --group ocr`                   |
-| Install visualization tools | `uv sync --group viz`                   |
-| Install multiple groups     | `uv sync --group GROUP1 --group GROUP2` |
-| Add package to base         | `uv add PACKAGE`                        |
-| Add package to group        | `uv add PACKAGE --group GROUPNAME`      |
-| List installed packages     | `uv pip list`                           |
-| Show available groups       | `uv tree`                               |
-
-> Python 3.12.11 is recommended for this project to ensure compatibility with all dependencies.
-
----
-
-# Branch Instructions
-
-### Check current branch
-
-```bash
-git branch
-```
-
-If not on **main**, switch:
-
-```bash
-git checkout main
-```
-
----
-
-### Pull the latest changes from origin
-
-```bash
-git pull origin main
-```
-
----
-
-### Create a new feature branch
-
-```bash
-git checkout -b <feature-name>
-```
-
-**Branch naming convention:**
-`[FirstLetterOfFirstName][FirstLetterOfLastName]-[feature_added]`
-
-Example:
-
-```text
-CB-preprocessing
-AS-visualizations
-```
-
----
-
-### First push of a new branch
-
-```bash
-git push -u origin <feature-name>
-```
-
-> Required only for the first push of a branch.
-
----
-
-### Subsequent pushes
-
-```bash
-git add .
-git commit -m "message_in_lowercase_with_underscores"
-git push
-```
-
-> **Commit messages** must be lowercase with underscores, e.g.:
-> `add_document_classifier`
-> `update_ocr_pipeline`
-
----
-
-### Merging
-
-1. Go to GitHub → **Pull Requests** → **New Pull Request**
-2. Set:
-
-```text
-base: main <- compare: <your-feature-branch>
-```
-
-3. Review and resolve conflicts if necessary.
-
----
-
-### Switching back to main
-
-```bash
-git fetch
-git pull
-git checkout main
-git pull origin main
-```
