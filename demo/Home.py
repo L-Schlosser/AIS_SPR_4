@@ -1,87 +1,179 @@
 """Home page for the Edge-AI Document Processing demo."""
 
 import streamlit as st
+from utils import metric_card, section_header, setup_page
 
-from demo.utils import setup_page
+setup_page("Home", "🧠")
 
-setup_page("Home", "🏠")
-
-st.title("Edge-AI Document Processing for BMD Go")
-st.markdown("#### On-device document classification and field extraction pipeline")
-
-# --- Key Metrics ---
-col1, col2, col3 = st.columns(3)
-col1.metric("Document Types", "3")
-col2.metric("ONNX Models", "4")
-col3.metric("Total Size", "~199 MB")
-
-# --- Architecture Flow Diagram ---
-st.subheader("Processing Pipeline")
-st.graphviz_chart(
+# ---------------------------------------------------------------------------
+# Hero Section
+# ---------------------------------------------------------------------------
+st.markdown(
     """
-    digraph pipeline {
-        rankdir=LR;
-        node [shape=box, style="rounded,filled", fillcolor="#f0f2f6",
-              fontname="Helvetica", fontsize=11];
-        edge [color="#666666"];
-
-        A [label="Document\\nImage"];
-        B [label="Preprocessor"];
-        C [label="EfficientNet\\nClassifier"];
-        D [label="RapidOCR"];
-        E [label="DistilBERT\\nNER"];
-        F [label="Postprocessor"];
-        G [label="JSON Schema\\nValidator"];
-        H [label="Structured\\nJSON"];
-
-        A -> B -> C -> D -> E -> F -> G -> H;
-    }
-    """
+    <div class="hero-container">
+        <div class="hero-badge">Edge-AI &middot; On-Device &middot; Privacy-First</div>
+        <div class="hero-title">Edge-AI Document Processing</div>
+        <div class="hero-subtitle">
+            On-device classification and field extraction for BMD Go<br>
+            <strong style="color: #00D4FF;">98.4% accuracy</strong> &middot;
+            <strong style="color: #7C3AED;">4 ONNX models</strong> &middot;
+            <strong style="color: #10B981;">~199 MB total</strong>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-# --- Supported Document Types ---
-st.subheader("Supported Document Types")
-st.table(
-    {
-        "Document Type": [
-            "Arztbesuchsbestaetigung",
-            "Reisekostenbeleg",
-            "Lieferschein",
-        ],
-        "Description": [
-            "Medical visit confirmation",
-            "Travel expense receipt",
-            "Delivery note",
-        ],
-        "Key Fields": [
-            "Patient, doctor, facility, date, time",
-            "Vendor, date, amount, currency, VAT",
-            "Delivery number, sender, recipient, items",
-        ],
-    }
-)
+# ---------------------------------------------------------------------------
+# Key Metrics Row
+# ---------------------------------------------------------------------------
+cols = st.columns(4)
+cards = [
+    ("📄", "3", "Document Types", "cyan"),
+    ("🧠", "4", "ONNX Models", "purple"),
+    ("🎯", "98.4%", "Classification Accuracy", "green"),
+    ("📦", "~199 MB", "Total Model Size", "amber"),
+]
+for col, (icon, value, label, color) in zip(cols, cards):
+    with col:
+        st.markdown(metric_card(icon, value, label, color), unsafe_allow_html=True)
 
-# --- Sidebar ---
-with st.sidebar:
-    st.header("Navigation")
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
+# How It Works — Pipeline Steps
+# ---------------------------------------------------------------------------
+section_header("How It Works")
+
+steps = [
+    ("Document Image", "Camera photo or scan uploaded as JPEG/PNG"),
+    ("Image Preprocessing", "Resize to 224x224, ImageNet normalization"),
+    ("Document Classification", "EfficientNet-Lite0 identifies document type with 98.4% accuracy"),
+    ("OCR Text Extraction", "RapidOCR converts image to text for field extraction"),
+    ("NER Field Extraction", "DistilBERT extracts key fields using BIO tagging per document type"),
+    ("Postprocessing", "Date/time parsing, number formatting, field normalization"),
+    ("Schema Validation", "JSON Schema Draft-07 validates output structure"),
+    ("Structured JSON", "Clean, validated result ready for BMD Go integration"),
+]
+for i, (title, desc) in enumerate(steps, 1):
     st.markdown(
-        """
-Use the sidebar pages to explore:
-- **Live Demo** — process documents in real time
-- **Architecture** — pipeline design and model details
-- **Models & Metrics** — performance benchmarks
-- **About** — team and technology stack
-"""
+        f"""
+        <div class="pipeline-step">
+            <span class="step-number">{i}</span>
+            <span class="step-title">{title}</span>
+            <div class="step-desc">{desc}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.divider()
-    st.header("How to Run")
-    st.code(
-        """\
-# Install dependencies
-uv sync --group demo --group ocr
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Start the demo
-uv run streamlit run demo/Home.py""",
+# ---------------------------------------------------------------------------
+# Why Edge-AI — Feature Highlights
+# ---------------------------------------------------------------------------
+section_header("Why Edge-AI?")
+
+feat_cols = st.columns(3)
+features = [
+    (
+        "🔒",
+        "Privacy First",
+        "All processing happens on-device. No document data leaves the phone. "
+        "No cloud APIs, no internet required.",
+    ),
+    (
+        "⚡",
+        "Lightning Fast",
+        "Sub-second inference with quantized ONNX models. "
+        "INT8 NER + Float16 classifier for minimal latency.",
+    ),
+    (
+        "🎯",
+        "High Accuracy",
+        "98.4% document classification accuracy. "
+        "Up to 99.1% NER F1 score for field extraction.",
+    ),
+]
+for col, (icon, title, desc) in zip(feat_cols, features):
+    with col:
+        st.markdown(
+            f"""
+            <div class="feature-card">
+                <div class="feature-icon">{icon}</div>
+                <h3>{title}</h3>
+                <p>{desc}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
+# Supported Document Types
+# ---------------------------------------------------------------------------
+section_header("Supported Document Types")
+
+doc_cols = st.columns(3)
+doc_types = [
+    (
+        "🏥",
+        "Arztbesuchsbestaetigung",
+        "Medical Visit Confirmation",
+        "Patient, Doctor, Facility, Address, Date, Time, Duration",
+        "cyan",
+    ),
+    (
+        "🧾",
+        "Reisekostenbeleg",
+        "Travel Expense Receipt",
+        "Vendor, Date, Amount, Currency, VAT Rate, Category, Receipt No.",
+        "purple",
+    ),
+    (
+        "📦",
+        "Lieferschein",
+        "Delivery Note",
+        "Delivery No., Date, Sender, Recipient, Items, Order No., Weight",
+        "green",
+    ),
+]
+for col, (icon, name, desc, fields, color) in zip(doc_cols, doc_types):
+    with col:
+        border_color = {"cyan": "#00D4FF", "purple": "#7C3AED", "green": "#10B981"}[color]
+        st.markdown(
+            f"""
+            <div class="doc-card" style="border-top: 3px solid {border_color};">
+                <div class="doc-icon">{icon}</div>
+                <h3>{name}</h3>
+                <p style="color: #94A3B8; font-size: 0.85rem; margin-bottom: 0.8rem;">{desc}</p>
+                <div class="doc-fields">
+                    {"<br>".join(f"&bull; {f.strip()}" for f in fields.split(","))}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+# ---------------------------------------------------------------------------
+# Sidebar
+# ---------------------------------------------------------------------------
+with st.sidebar:
+    st.markdown("### 🧠 Edge-AI Docs")
+    st.markdown(
+        """
+Navigate the demo:
+- **Live Demo** — Process documents in real time
+- **Architecture** — Pipeline design and flow
+- **Models & Metrics** — Performance benchmarks
+- **Tech Stack** — Technologies and methodology
+- **About** — Team and project info
+"""
+    )
+    st.divider()
+    st.markdown("##### Quick Start")
+    st.code(
+        "uv sync --group demo --group ocr\nuv run streamlit run demo/Home.py",
         language="bash",
     )
