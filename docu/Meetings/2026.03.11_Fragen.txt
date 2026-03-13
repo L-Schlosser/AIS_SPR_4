@@ -1,19 +1,76 @@
-Fragen:
-
-
 App-Mockup:
 Ist Flutter als Environment ok (Programmiersprache Dart)?
-	-> Wenn nicht - sollen wir kotlin oder ionic oder was anders verwenden?
+- VISUALISIERUNG: nachempfunden zu bmi
+- technische aspekte -> .net maui funktionieren
+
+Plattform -> android (1 durchgehender usecase)
 Soll es nur für Android funktionieren or sollen wir ein MacBook organisieren und auch eine io version machen?
+
 
 Wie soll es circa aufgebaut sein die App:
 2 Seiten:
-	->Take/Import Picture
-	->History
+    ->Take/Import Picture
+    ->History
+
+	-> Beleg upload vo BMD
+Haupt Use case:
+	+ Foto kassenbeleg
+	+ verarbeitung
+	+ strukturierte Daten (UID, Beträge, …) ans backend übergeben
+	+ fibo ist ein backend
+	+ dokumentverarbeitung am device	
 
 SourceCode Doku -> .md files ODER Mit kommentaren und Docstrings im Code?
+	-> kommentare am schluss in word doku aufnehmen
+	-> Grobe doku (wie kann man es zum laufen birngen -> reihenfloge, installieren)
+		+ umgebung, system, tests, welche ide -> möglichst schnell starten
+		+ Konzep, womit wird geabreitet, mit was geteste, hauptoutcome : FAZIT
+
 
 Sprit Review/preview?
-	wie oft?
-	Jeden sprint eine funktionierende Version/App -> oder nur Präsi von Fortschritt?
+    wie oft?
+    Jeden sprint eine funktionierende Version/App -> oder nur Präsi von Fortschritt?
+
+
+Next Question - should the app be english or german
+
+
+Daten:
+	-> Kaggel Datensets vorschlagen
+	-> BMD - keine beläge weitergeben
+	-> LINKS -> datasets die ähnlich sind
+	-> Zeitbestätigungen vom Arzt auch (Nicht dabei)
+	-> Liste: Typen von Dokumente(Rechnungen, Kassenbelege, Bestätigungen(Arzt, Pflege als add on), Lieferscheine)
+	-> Rechnungen (ein paar ev. belege aus demo) 
+
+Umsätzung:
+	-> Training
+		+ daten generieren (ein link - daten generieren)
+		+ Tests -> selbst was testen
+	-> als Result -> Json abfolge
+		-> als visuelle ausgabe
+	-> Hauptfokus-> Klassifizierung
+	-> Edge Gerät -> Smartphone(Android)
+
+
+Fragen:
+	Repo am schluss einladen
+	Sprache
+		Code - beschreibung: Englisch
+		Dokumente -> deutsche texte und englisch
+		Programm Deutsch (ev. englisch übersetzbar)
+	
+
+
+NUR ERSTES THEMA!!
+
+App Lösung -> interrassnt sind auch statistiken(Speicher
+	
+	
+
+Termine -> in 3 Wochen
+8. April 14:00
+
+
+Email -> kommunikation!
 
