@@ -1,0 +1,11 @@
+wie gestern beim Kick-Off besprochen, schicke ich dir hiermit noch ein paar Unterlagen zu unserer App BMD Go:
+
+Belegupload:BMD Go Lernvideos auf Vimeo (noch ein etwas älteres Design) (https://vimeo.com/showcase/11472171)
+Neuere Videos sind auch hier abrufbar:BMD Go Lernvideos auf Vimeo (https://vimeo.com/showcase/11472171?video=875989325)
+Es sind auch noch ein paar aktuelle Screenshots vom Belegupload angehängt.
+ 
+
+Ein umfangreiches Set an Beispielbelegen haben wir aktuell nicht vorliegen, jedoch können wir bestimmt entsprechende Belege generieren.
+
+Siehe ev. auchInv3D: a high-resolution 3D invoice dataset for template-guided single-image document unwarping,naver-clova-ix/cord-v1 · Datasets at Hugging Face,Francisco-Cruz/InvoicesReceiptsPT · Datasets at Hugging Face
+LINK: https://felixhertlein.github.io/inv3d/#Downloads
