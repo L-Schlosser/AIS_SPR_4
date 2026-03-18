@@ -232,6 +232,25 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "11.1.4"
+<<<<<<< Updated upstream
+=======
+  google_mlkit_commons:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_commons
+      sha256: "42173a8ba89f386486cc5b8249e84da4a4b861daa70498373627d985eb418689"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
+  google_mlkit_text_recognition:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_text_recognition
+      sha256: "588021c99536fdfb173eeecc4ee1b60ea4e0bd4be9787f52363c85346ae20364"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
+>>>>>>> Stashed changes
   hooks:
     dependency: transitive
     description:
@@ -480,6 +499,17 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+<<<<<<< Updated upstream
+=======
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      sha256: "157d29133bbc6ecb11f923d36e7960a96a3f28837549a20b65e5135729f0f9fd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.5"
+>>>>>>> Stashed changes
   petitparser:
     dependency: transitive
     description:
@@ -528,6 +558,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+<<<<<<< Updated upstream
   quiver:
     dependency: transitive
     description:
@@ -536,6 +567,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.2"
+=======
+>>>>>>> Stashed changes
   sky_engine:
     dependency: transitive
     description: flutter
@@ -645,6 +678,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.10"
+<<<<<<< Updated upstream
   tflite_flutter:
     dependency: "direct main"
     description:
@@ -653,6 +687,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.4"
+=======
+>>>>>>> Stashed changes
   typed_data:
     dependency: transitive
     description:
