@@ -43,11 +43,8 @@ dependencies:
   # Image processing
   image: ^4.1.0
   
-<<<<<<< Updated upstream
   # TensorFlow Lite
-  tflite_flutter: ^0.10.4
-=======
->>>>>>> Stashed changes
+  # tflite_flutter: ^0.10.4
   
   # File and path utilities
   path_provider: ^2.1.1
@@ -68,16 +65,13 @@ dependencies:
   # Image picker
   image_picker: ^1.0.4
 
-<<<<<<< Updated upstream
-=======
   percent_indicator: ^4.1.0
 
   # ML Kit Text Recognition:
   #tflite_flutter: ^0.11.0
-  google_mlkit_text_recognition: ^0.10.0
-  google_mlkit_commons: ^0.5.0
+  # google_mlkit_text_recognition: ^0.10.0
+  # google_mlkit_commons: ^0.5.0
 
->>>>>>> Stashed changes
 
 dev_dependencies:
   flutter_test:
@@ -96,13 +90,10 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
-<<<<<<< Updated upstream
-=======
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/models/
 
->>>>>>> Stashed changes
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
