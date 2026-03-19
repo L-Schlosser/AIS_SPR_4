@@ -61,33 +61,22 @@ Image → OCR → Text → Classification → Extraction
 ## 4. Repository Structure
 
 ```
-.
-├── data/                 # Sample data and output schemas
-│   ├── samples/
-│   └── schemas/
-│
-├── edge-model/           # ML models and inference logic
-│   ├── classification/
-│   ├── extraction/
-│   └── inference/
-│
-├── mobile-app/           # Mobile client integration layer
-│   └── src/
-│
-├── ocr/                  # OCR module (optional extension)
-│
-├── api/                  # Interfaces between application and ML pipeline
-│
-├── scripts/              # Utility and automation scripts
-│
-├── tests/                # Unit and integration tests
-│
-├── docs/                 # Technical documentation
-│   ├── architecture.md
-│   └── model_pipeline.md
-│
-├── README.md
-└── .gitignore
+AIS_SPR_4/
+├── .venv/                  # Python virtual environment
+├── app/                    # Core application logic
+├── data/                   # Datasets used in the project
+├── docu/                   # Documentation files
+├── MobileApp/              # Mobile app implementation
+├── ocr/                    # OCR model and preprocessing scripts
+├── results/                # Output results, logs, and model predictions
+├── tests/                  # Unit and integration tests
+├── test_project/           # Experimental scripts and prototypes
+├── .gitignore              # Git ignore configuration
+├── .python-version         # Python version specification
+├── main.py                 # Entry point for the main application
+├── pyproject.toml          # Project configuration and dependencies
+├── README.md               # Project README (this file)
+└── uv.lock                 # Dependency lock file for environment reproducibility
 ```
 
 ---
@@ -136,13 +125,14 @@ All outputs are validated against the schemas defined in `data/schemas/`.
 
 ## 8. Intended Roles
 
-| Contibuter                 | Role                       | Responsibility                     |
-| -------------------------- | -------------------------- | ---------------------------------- |
-| Celina Binder              |                            |                                    |
-| Eichsteininger Natalie     |                            |                                    |
-| Hysenlli Klevi             |                            |                                    |
-| Schlosser Lorenz Johannes  |                            |                                    |
-| Suchomel Raphael           |                            |                                    |
+| Contributor               | Role                              | Responsibility                                                      |
+| ------------------------- | --------------------------------- | ------------------------------------------------------------------- |
+| Celina Binder             | Mobile App Architecture & UI      | Design app structure, implement core logic, manage UI components    |
+| Eichsteininger Natalie    | Mobile Research & OCR Integration | Research mobile compatibility, implement and optimize OCR model     |
+| Hysenlli Klevi            | Search Model Developer            | Develop, fine-tune, and test search model                           |
+| Schlosser Lorenz Johannes | Mobile App Architecture & UI      | Design app structure, implement core logic, manage UI components    |
+| Suchomel Raphael          | Search Model Developer            | Develop, fine-tune, and test search model                           |
+
 
 ---
 
@@ -211,30 +201,6 @@ This keeps environments **clean, conflict-free, and fast**, and simplifies colla
 uv sync
 ```
 
-**OCR module:**
-
-```bash
-uv sync --group ocr
-```
-
-**Visualization tools:**
-
-```bash
-uv sync --group viz
-```
-
-**Multiple groups at once:**
-
-```bash
-uv sync --group ocr --group viz
-```
-
-**All groups (use only if necessary):**
-
-```bash
-uv sync --all-groups
-```
-
 ---
 
 ### Adding New Dependencies
@@ -251,7 +217,6 @@ uv add PACKAGE
 
 ```bash
 uv add PACKAGE --group ocr
-uv add PACKAGE --group viz
 ```
 
 ---
@@ -274,7 +239,6 @@ uv tree
 
 ### Python File Guidelines
 
-* All Python code **must use `.py` files**
 * Filenames should be **lowercase and descriptive**, e.g.:
 
 ```text
@@ -283,22 +247,6 @@ ocr_pipeline.py
 data_loader.py
 ```
 
----
-
-### Summary Table
-
-| Task                        | Command                                 |
-| --------------------------- | --------------------------------------- |
-| Install base deps           | `uv sync`                               |
-| Install OCR module          | `uv sync --group ocr`                   |
-| Install visualization tools | `uv sync --group viz`                   |
-| Install multiple groups     | `uv sync --group GROUP1 --group GROUP2` |
-| Add package to base         | `uv add PACKAGE`                        |
-| Add package to group        | `uv add PACKAGE --group GROUPNAME`      |
-| List installed packages     | `uv pip list`                           |
-| Show available groups       | `uv tree`                               |
-
-> Python 3.12.11 is recommended for this project to ensure compatibility with all dependencies.
 
 ---
 
