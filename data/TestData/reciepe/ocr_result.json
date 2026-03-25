@@ -1,0 +1,726 @@
+{
+  "image_path": "/data/user/0/com.example.mobile_app/cache/bill.jpg",
+  "raw_text": "BILLA\nBilla AG\n1010 WIEN\nFRANZ JOSEFS KAI 29\nTEL: 059915-00141\nATU 15255907\nDatum: 28. 09. 2022\nSumme\n3 x 1.29\nC1. ESL-Vol lm. 1L\nLindt ExXcellence\nClever Schokolade\nMars Classic 4er\nGegeben KK MC\nBE ZA HLT\nMasterCard\nXXXX XXXX XXXX 8500\nTKCO10277534042\nEA0000000041010\n20220928 122019\nEUR\n(7)\nB: 10% MwSt von\nZeit: 12:20\nBetrag dankend erhalten\n716A540BUOD74211BE 7BECF298799F97\n3.87\n2. 19\n0.59\n2. 19\n23201523\n267356\n11/23\nBeleg Nr. :221239\nC01\nVielen Dank für Ihren Einkauf!\nMit diesem QR Code in nur\n1 Minute Feedback geben!\n8. 84\n8.84\n8.04 = 0.80\nFiliale: 00141 Kassa: 1 Bon-Nr: 8617\nPos: 6 Kassier: Fr. Aydogan /36\nRe-Nr: 0141-20220928-01-8617",
+  "lines": [
+    "BILLA",
+    "Billa AG",
+    "1010 WIEN",
+    "FRANZ JOSEFS KAI 29",
+    "TEL: 059915-00141",
+    "ATU 15255907",
+    "Datum: 28. 09. 2022",
+    "Summe",
+    "3 x 1.29",
+    "C1. ESL-Vol lm. 1L",
+    "Lindt ExXcellence",
+    "Clever Schokolade",
+    "Mars Classic 4er",
+    "Gegeben KK MC",
+    "BE ZA HLT",
+    "MasterCard",
+    "XXXX XXXX XXXX 8500",
+    "TKCO10277534042",
+    "EA0000000041010",
+    "20220928 122019",
+    "EUR",
+    "(7)",
+    "B: 10% MwSt von",
+    "Zeit: 12:20",
+    "Betrag dankend erhalten",
+    "716A540BUOD74211BE 7BECF298799F97",
+    "3.87",
+    "2. 19",
+    "0.59",
+    "2. 19",
+    "23201523",
+    "267356",
+    "11/23",
+    "Beleg Nr. :221239",
+    "C01",
+    "Vielen Dank für Ihren Einkauf!",
+    "Mit diesem QR Code in nur",
+    "1 Minute Feedback geben!",
+    "8. 84",
+    "8.84",
+    "8.04 = 0.80",
+    "Filiale: 00141 Kassa: 1 Bon-Nr: 8617",
+    "Pos: 6 Kassier: Fr. Aydogan /36",
+    "Re-Nr: 0141-20220928-01-8617"
+  ],
+  "blocks": [
+    {
+      "text": "BILLA",
+      "lines": [
+        {
+          "text": "BILLA",
+          "elements": [
+            {
+              "text": "BILLA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Billa AG\n1010 WIEN\nFRANZ JOSEFS KAI 29\nTEL: 059915-00141\nATU 15255907",
+      "lines": [
+        {
+          "text": "Billa AG",
+          "elements": [
+            {
+              "text": "Billa"
+            },
+            {
+              "text": "AG"
+            }
+          ]
+        },
+        {
+          "text": "1010 WIEN",
+          "elements": [
+            {
+              "text": "1010"
+            },
+            {
+              "text": "WIEN"
+            }
+          ]
+        },
+        {
+          "text": "FRANZ JOSEFS KAI 29",
+          "elements": [
+            {
+              "text": "FRANZ"
+            },
+            {
+              "text": "JOSEFS"
+            },
+            {
+              "text": "KAI"
+            },
+            {
+              "text": "29"
+            }
+          ]
+        },
+        {
+          "text": "TEL: 059915-00141",
+          "elements": [
+            {
+              "text": "TEL:"
+            },
+            {
+              "text": "059915-00141"
+            }
+          ]
+        },
+        {
+          "text": "ATU 15255907",
+          "elements": [
+            {
+              "text": "ATU"
+            },
+            {
+              "text": "15255907"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Datum: 28. 09. 2022",
+      "lines": [
+        {
+          "text": "Datum: 28. 09. 2022",
+          "elements": [
+            {
+              "text": "Datum:"
+            },
+            {
+              "text": "28."
+            },
+            {
+              "text": "09."
+            },
+            {
+              "text": "2022"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Summe",
+      "lines": [
+        {
+          "text": "Summe",
+          "elements": [
+            {
+              "text": "Summe"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3 x 1.29\nC1. ESL-Vol lm. 1L\nLindt ExXcellence\nClever Schokolade\nMars Classic 4er",
+      "lines": [
+        {
+          "text": "3 x 1.29",
+          "elements": [
+            {
+              "text": "3"
+            },
+            {
+              "text": "x"
+            },
+            {
+              "text": "1.29"
+            }
+          ]
+        },
+        {
+          "text": "C1. ESL-Vol lm. 1L",
+          "elements": [
+            {
+              "text": "C1."
+            },
+            {
+              "text": "ESL-Vol"
+            },
+            {
+              "text": "lm."
+            },
+            {
+              "text": "1L"
+            }
+          ]
+        },
+        {
+          "text": "Lindt ExXcellence",
+          "elements": [
+            {
+              "text": "Lindt"
+            },
+            {
+              "text": "ExXcellence"
+            }
+          ]
+        },
+        {
+          "text": "Clever Schokolade",
+          "elements": [
+            {
+              "text": "Clever"
+            },
+            {
+              "text": "Schokolade"
+            }
+          ]
+        },
+        {
+          "text": "Mars Classic 4er",
+          "elements": [
+            {
+              "text": "Mars"
+            },
+            {
+              "text": "Classic"
+            },
+            {
+              "text": "4er"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Gegeben KK MC",
+      "lines": [
+        {
+          "text": "Gegeben KK MC",
+          "elements": [
+            {
+              "text": "Gegeben"
+            },
+            {
+              "text": "KK"
+            },
+            {
+              "text": "MC"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "BE ZA HLT\nMasterCard",
+      "lines": [
+        {
+          "text": "BE ZA HLT",
+          "elements": [
+            {
+              "text": "BE"
+            },
+            {
+              "text": "ZA"
+            },
+            {
+              "text": "HLT"
+            }
+          ]
+        },
+        {
+          "text": "MasterCard",
+          "elements": [
+            {
+              "text": "MasterCard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "XXXX XXXX XXXX 8500\nTKCO10277534042\nEA0000000041010\n20220928 122019",
+      "lines": [
+        {
+          "text": "XXXX XXXX XXXX 8500",
+          "elements": [
+            {
+              "text": "XXXX"
+            },
+            {
+              "text": "XXXX"
+            },
+            {
+              "text": "XXXX"
+            },
+            {
+              "text": "8500"
+            }
+          ]
+        },
+        {
+          "text": "TKCO10277534042",
+          "elements": [
+            {
+              "text": "TKCO10277534042"
+            }
+          ]
+        },
+        {
+          "text": "EA0000000041010",
+          "elements": [
+            {
+              "text": "EA0000000041010"
+            }
+          ]
+        },
+        {
+          "text": "20220928 122019",
+          "elements": [
+            {
+              "text": "20220928"
+            },
+            {
+              "text": "122019"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "EUR",
+      "lines": [
+        {
+          "text": "EUR",
+          "elements": [
+            {
+              "text": "EUR"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "(7)",
+      "lines": [
+        {
+          "text": "(7)",
+          "elements": [
+            {
+              "text": "(7)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "B: 10% MwSt von",
+      "lines": [
+        {
+          "text": "B: 10% MwSt von",
+          "elements": [
+            {
+              "text": "B:"
+            },
+            {
+              "text": "10%"
+            },
+            {
+              "text": "MwSt"
+            },
+            {
+              "text": "von"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Zeit: 12:20",
+      "lines": [
+        {
+          "text": "Zeit: 12:20",
+          "elements": [
+            {
+              "text": "Zeit:"
+            },
+            {
+              "text": "12:20"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Betrag dankend erhalten",
+      "lines": [
+        {
+          "text": "Betrag dankend erhalten",
+          "elements": [
+            {
+              "text": "Betrag"
+            },
+            {
+              "text": "dankend"
+            },
+            {
+              "text": "erhalten"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "716A540BUOD74211BE 7BECF298799F97",
+      "lines": [
+        {
+          "text": "716A540BUOD74211BE 7BECF298799F97",
+          "elements": [
+            {
+              "text": "716A540BUOD74211BE"
+            },
+            {
+              "text": "7BECF298799F97"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "3.87",
+      "lines": [
+        {
+          "text": "3.87",
+          "elements": [
+            {
+              "text": "3.87"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. 19",
+      "lines": [
+        {
+          "text": "2. 19",
+          "elements": [
+            {
+              "text": "2."
+            },
+            {
+              "text": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "0.59",
+      "lines": [
+        {
+          "text": "0.59",
+          "elements": [
+            {
+              "text": "0.59"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "2. 19",
+      "lines": [
+        {
+          "text": "2. 19",
+          "elements": [
+            {
+              "text": "2."
+            },
+            {
+              "text": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "23201523\n267356\n11/23",
+      "lines": [
+        {
+          "text": "23201523",
+          "elements": [
+            {
+              "text": "23201523"
+            }
+          ]
+        },
+        {
+          "text": "267356",
+          "elements": [
+            {
+              "text": "267356"
+            }
+          ]
+        },
+        {
+          "text": "11/23",
+          "elements": [
+            {
+              "text": "11/23"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Beleg Nr. :221239\nC01",
+      "lines": [
+        {
+          "text": "Beleg Nr. :221239",
+          "elements": [
+            {
+              "text": "Beleg"
+            },
+            {
+              "text": "Nr."
+            },
+            {
+              "text": ":221239"
+            }
+          ]
+        },
+        {
+          "text": "C01",
+          "elements": [
+            {
+              "text": "C01"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Vielen Dank für Ihren Einkauf!",
+      "lines": [
+        {
+          "text": "Vielen Dank für Ihren Einkauf!",
+          "elements": [
+            {
+              "text": "Vielen"
+            },
+            {
+              "text": "Dank"
+            },
+            {
+              "text": "für"
+            },
+            {
+              "text": "Ihren"
+            },
+            {
+              "text": "Einkauf!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Mit diesem QR Code in nur\n1 Minute Feedback geben!",
+      "lines": [
+        {
+          "text": "Mit diesem QR Code in nur",
+          "elements": [
+            {
+              "text": "Mit"
+            },
+            {
+              "text": "diesem"
+            },
+            {
+              "text": "QR"
+            },
+            {
+              "text": "Code"
+            },
+            {
+              "text": "in"
+            },
+            {
+              "text": "nur"
+            }
+          ]
+        },
+        {
+          "text": "1 Minute Feedback geben!",
+          "elements": [
+            {
+              "text": "1"
+            },
+            {
+              "text": "Minute"
+            },
+            {
+              "text": "Feedback"
+            },
+            {
+              "text": "geben!"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "8. 84",
+      "lines": [
+        {
+          "text": "8. 84",
+          "elements": [
+            {
+              "text": "8."
+            },
+            {
+              "text": "84"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "8.84",
+      "lines": [
+        {
+          "text": "8.84",
+          "elements": [
+            {
+              "text": "8.84"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "8.04 = 0.80",
+      "lines": [
+        {
+          "text": "8.04 = 0.80",
+          "elements": [
+            {
+              "text": "8.04"
+            },
+            {
+              "text": "="
+            },
+            {
+              "text": "0.80"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Filiale: 00141 Kassa: 1 Bon-Nr: 8617\nPos: 6 Kassier: Fr. Aydogan /36\nRe-Nr: 0141-20220928-01-8617",
+      "lines": [
+        {
+          "text": "Filiale: 00141 Kassa: 1 Bon-Nr: 8617",
+          "elements": [
+            {
+              "text": "Filiale:"
+            },
+            {
+              "text": "00141"
+            },
+            {
+              "text": "Kassa:"
+            },
+            {
+              "text": "1"
+            },
+            {
+              "text": "Bon-Nr:"
+            },
+            {
+              "text": "8617"
+            }
+          ]
+        },
+        {
+          "text": "Pos: 6 Kassier: Fr. Aydogan /36",
+          "elements": [
+            {
+              "text": "Pos:"
+            },
+            {
+              "text": "6"
+            },
+            {
+              "text": "Kassier:"
+            },
+            {
+              "text": "Fr."
+            },
+            {
+              "text": "Aydogan"
+            },
+            {
+              "text": "/36"
+            }
+          ]
+        },
+        {
+          "text": "Re-Nr: 0141-20220928-01-8617",
+          "elements": [
+            {
+              "text": "Re-Nr:"
+            },
+            {
+              "text": "0141-20220928-01-8617"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
