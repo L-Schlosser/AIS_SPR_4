@@ -1,6 +1,6 @@
 # BMD Document Processing - Edge AI Model Documentation
 
-## 1. Model Overview
+## 1. Model <!-- TODO: Model Name -->
 | Field | Value |
 |---|---|
 | **Model Name** | _e.g. yolov8-nano-bmd-v1_ |
@@ -148,4 +148,4 @@ python train.py \
  
 ---
  
-*Last updated: <!-- TODO: YYYY-MM-DD --> · Documented by: <!-- TODO: Name -->*
+*Documented by: <!-- TODO: Name -->*
