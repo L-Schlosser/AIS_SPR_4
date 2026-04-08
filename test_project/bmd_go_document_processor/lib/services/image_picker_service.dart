@@ -130,4 +130,24 @@ class ImagePickerService {
       return null;
     }
   }
+
+
+  /// Pick or take multiple images for multi-page documents
+  Future<List<File>> pickMultipleImagesForDocument({required ImageSource source}) async {
+    try {
+      if (source == ImageSource.gallery) {
+        final List<XFile> pickedFiles = await _imagePicker.pickMultiImage(
+          imageQuality: 95,
+        );
+        return pickedFiles.map((file) => File(file.path)).toList();
+      } else {
+        // For camera, we need to handle it differently (take one at a time)
+        // Return empty list - will be handled in UI
+        return [];
+      }
+    } catch (e) {
+      print('Error picking multiple images: $e');
+      return [];
+    }
+  }
 }

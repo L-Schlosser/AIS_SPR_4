@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../services/ml_service.dart';
+import '../services/ml_service_ocr.dart';
 
 class ClassificationResultsScreen extends StatefulWidget {
-  final ClassificationResult result;
+  final OCRClassificationResult result;
 
   const ClassificationResultsScreen({
     Key? key,
@@ -23,7 +24,7 @@ class _ClassificationResultsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Classification Result'),
+        title: const Text('Klassifizierungsergebnisse'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -78,11 +79,11 @@ class _ClassificationResultsScreenState
               ),
               const SizedBox(height: 30),
               Text(
-                'All Scores',
+                'Alle Informationen',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 15),
-              ..._buildScoresList(result),
+              const SizedBox(height: 20),
+              ..._buildInfosList(result),
               const SizedBox(height: 30),
               Row(
                 children: [
@@ -92,7 +93,7 @@ class _ClassificationResultsScreenState
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
                       ),
-                      child: const Text('Back'),
+                      child: const Text('Zurück'),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -101,11 +102,11 @@ class _ClassificationResultsScreenState
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Field extraction coming next!'),
+                            content: Text('Speichern-Funktion ist noch nicht implementiert.'),
                           ),
                         );
                       },
-                      child: const Text('Extract Fields'),
+                      child: const Text('Speichern'),
                     ),
                   ),
                 ],
@@ -117,8 +118,8 @@ class _ClassificationResultsScreenState
     );
   }
 
-  List<Widget> _buildScoresList(ClassificationResult result) {
-    return result.scores.entries
+  List<Widget> _buildInfosList(OCRClassificationResult result) {
+    return result.infos.entries
         .map(
           (entry) => Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
@@ -126,7 +127,7 @@ class _ClassificationResultsScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(entry.key.replaceAll('_', ' ').toUpperCase()),
-                Text('${(entry.value * 100).toStringAsFixed(1)}%'),
+                Text(entry.value.toString()), // '${(entry.value * 100).toStringAsFixed(1)}%'),
               ],
             ),
           ),
