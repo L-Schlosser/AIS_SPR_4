@@ -1,0 +1,9 @@
+-> Soll das Feld und die Features von einem Dokument gleichzeitig herausgefunden werden oder in 2 steps
+	Also man last es classifizieren und 
+		- wenn richtig -> die features heruasfinden
+		- wenn falsch, die Kategorie richtig stellen un ddann erst features 
+
+
+-> soll es so eine Art History geben?
+	Also das man alle document und die eigenschaften speichert?
+
