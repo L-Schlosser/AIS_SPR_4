@@ -3,12 +3,12 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 
 class OCRClassificationResult {
   final String documentType;
-  final double confidence;
+  final double? confidence;
   final Map<String, String> infos;
 
   OCRClassificationResult({
     required this.documentType,
-    required this.confidence,
+    this.confidence,
     required this.infos,
   });
 }
