@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../services/classification_service.dart';
-
 class ClassificationCard extends StatelessWidget {
-  final ClassificationResult result;
   final String? selectedDocumentType;
   final List<String> documentTypes;
   final ValueChanged<String?> onDocumentTypeChanged;
+  final double confidence;
 
   const ClassificationCard({
     super.key,
-    required this.result,
     required this.selectedDocumentType,
     required this.documentTypes,
     required this.onDocumentTypeChanged,
+    required this.confidence,
   });
 
   @override
@@ -49,7 +47,7 @@ class ClassificationCard extends StatelessWidget {
               onChanged: onDocumentTypeChanged,
             ),
             const SizedBox(height: 12),
-            Text('Konfidenz: ${(result.confidence * 100).toStringAsFixed(0)}%'),
+            Text('Konfidenz: ${(confidence * 100).toStringAsFixed(0)}%'),
           ],
         ),
       ),

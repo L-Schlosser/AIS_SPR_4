@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,9 +12,12 @@ import '../services/json_service.dart';
 import '../services/ocr_service.dart';
 import '../widgets/classification_card.dart';
 import '../widgets/editable_fields_card.dart';
+import '../services/backend_upload_service.dart';
+import 'dart:async';
 
 const String screen2ResultNeedNewImages = 'need_new_images';
 const String screen2ResultSavedAll = 'saved_all';
+const int snackbarTimer = 6;
 
 class Screen2ReviewPage extends StatefulWidget {
   final List<File> imageFiles;
@@ -29,6 +33,8 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
   final ClassificationService _classificationService = ClassificationService();
   final ExtractionService _extractionService = ExtractionService();
   final JsonService _jsonService = const JsonService();
+  final BackendUploadService _backendUploadService =
+      const BackendUploadService();
 
   final List<String> _documentTypes = const [
     'receipt',
@@ -43,6 +49,8 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
   late final List<ReviewImageItem> _items;
   int _currentIndex = 0;
   bool _isBusy = false;
+
+  Timer? _pendingSaveTimer;
 
   ReviewImageItem? get _currentItem {
     if (_items.isEmpty) return null;
@@ -61,6 +69,8 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
 
   @override
   void dispose() {
+    _pendingSaveTimer?.cancel();
+
     for (final item in _items) {
       item.dispose();
     }
@@ -238,6 +248,8 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
 
     bool undone = false;
 
+    _pendingSaveTimer?.cancel();
+
     setState(() {
       _items.removeAt(removedIndex);
 
@@ -257,14 +269,58 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
 
-    final controller = messenger.showSnackBar(
+    _pendingSaveTimer = Timer(const Duration(seconds: snackbarTimer), () async {
+      if (undone) return;
+
+      await _jsonService.appendDocumentsToArrayFile([editedDocument]);
+
+      // send asynchronously, do not block UI
+      // unawaited(_backendUploadService.enqueueAndTryUpload([editedDocument]));
+
+      removedItem.dispose();
+
+      if (!mounted) return;
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.hideCurrentSnackBar();
+      messenger.clearSnackBars();
+
+      if (_items.isEmpty) {
+        Navigator.of(context).pop(screen2ResultNeedNewImages);
+      }
+    });
+
+    messenger.showSnackBar(
       SnackBar(
-        content: const Text('Dokument gespeichert'),
-        duration: const Duration(seconds: 8),
+        duration: const Duration(seconds: snackbarTimer),
+        content: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 1.0, end: 0.0),
+          duration: const Duration(seconds: snackbarTimer),
+          builder: (context, value, child) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Dokument gespeichert'),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(value: value, minHeight: 4),
+                ),
+              ],
+            );
+          },
+        ),
         action: SnackBarAction(
           label: 'Rückgängig',
           onPressed: () {
+            if (undone) return;
+
             undone = true;
+            _pendingSaveTimer?.cancel();
+            _pendingSaveTimer = null;
+
+            if (!mounted) return;
 
             setState(() {
               final insertIndex = removedIndex.clamp(0, _items.length);
@@ -277,31 +333,20 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
         ),
       ),
     );
-
-    final reason = await controller.closed;
-
-    if (!undone && reason != SnackBarClosedReason.action) {
-      await _jsonService.appendDocumentsToArrayFile([editedDocument]);
-
-      removedItem.dispose();
-
-      if (!mounted) return;
-
-      if (_items.isEmpty) {
-        Navigator.of(context).pop(screen2ResultNeedNewImages);
-      }
-    }
   }
 
   Future<void> _saveAll() async {
     if (_items.isEmpty) return;
+
+    _pendingSaveTimer?.cancel();
+    _pendingSaveTimer = null;
 
     setState(() {
       _isBusy = true;
     });
 
     try {
-      final documents = <StructuredDocument>[];
+      final documentsToSave = <StructuredDocument>[];
 
       for (final item in _items) {
         if (item.structuredDocument == null) {
@@ -310,27 +355,104 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
 
         final edited = _buildEditedStructuredDocument(item);
         if (edited != null) {
-          documents.add(edited);
+          documentsToSave.add(edited);
         }
       }
 
-      if (documents.isNotEmpty) {
-        await _jsonService.appendDocumentsToArrayFile(documents);
-      }
-
-      for (final item in _items) {
-        item.dispose();
-      }
-      _items.clear();
-
       if (!mounted) return;
-      Navigator.of(context).pop(screen2ResultSavedAll);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isBusy = false;
-        });
-      }
+
+      final removedItems = List<ReviewImageItem>.from(_items);
+      bool undone = false;
+
+      setState(() {
+        _items.clear();
+        _currentIndex = 0;
+        _isBusy = false;
+      });
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.hideCurrentSnackBar();
+
+      _pendingSaveTimer = Timer(
+        const Duration(seconds: snackbarTimer),
+        () async {
+          if (undone) return;
+
+          if (documentsToSave.isNotEmpty) {
+            await _jsonService.appendDocumentsToArrayFile(documentsToSave);
+
+            // send asynchronously, do not block UI
+            // unawaited(
+            //   _backendUploadService.enqueueAndTryUpload(documentsToSave),
+            // );
+          }
+
+          for (final item in removedItems) {
+            item.dispose();
+          }
+
+          if (!mounted) return;
+
+          final messenger = ScaffoldMessenger.of(context);
+          messenger.hideCurrentSnackBar();
+          messenger.clearSnackBars();
+
+          Navigator.of(context).pop(screen2ResultSavedAll);
+        },
+      );
+
+      messenger.showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: snackbarTimer),
+          content: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 1.0, end: 0.0),
+            duration: const Duration(seconds: snackbarTimer),
+            builder: (context, value, child) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Alle Dokumente gespeichert'),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(value: value, minHeight: 4),
+                  ),
+                ],
+              );
+            },
+          ),
+          action: SnackBarAction(
+            label: 'Rückgängig',
+            onPressed: () {
+              if (undone) return;
+
+              undone = true;
+              _pendingSaveTimer?.cancel();
+              _pendingSaveTimer = null;
+
+              if (!mounted) return;
+
+              setState(() {
+                _items.addAll(removedItems);
+                _currentIndex = 0;
+              });
+
+              _ensureCurrentProcessed();
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isBusy = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Fehler beim Speichern: $e')));
     }
   }
 
@@ -422,7 +544,11 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
               SizedBox(
                 height: 260,
                 width: double.infinity,
-                child: Image.file(item.imageFile, fit: BoxFit.contain),
+                child: Image.file(
+                  item.imageFile,
+                  fit: BoxFit.contain,
+                  gaplessPlayback: true,
+                ),
               ),
               Positioned(
                 left: 0,
@@ -500,22 +626,37 @@ class _Screen2ReviewPageState extends State<Screen2ReviewPage> {
           ),
         ),
       ),
-      body: (_isBusy || item == null || item.isProcessing)
+      body: item == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          : Stack(
               children: [
-                _buildImageSlideshow(),
-                const SizedBox(height: 12),
-                if (item.classificationResult != null)
-                  ClassificationCard(
-                    result: item.classificationResult!,
-                    selectedDocumentType: item.selectedDocumentType,
-                    documentTypes: _documentTypes,
-                    onDocumentTypeChanged: _onDocumentTypeChanged,
+                ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
+                  children: [
+                    _buildImageSlideshow(),
+                    const SizedBox(height: 12),
+                    if (item.classificationResult != null ||
+                        item.structuredDocument != null)
+                      ClassificationCard(
+                        selectedDocumentType: item.selectedDocumentType,
+                        documentTypes: _documentTypes,
+                        onDocumentTypeChanged: _onDocumentTypeChanged,
+                        confidence:
+                            item.structuredDocument?.classificationConfidence ??
+                            item.classificationResult?.confidence ??
+                            0.0,
+                      ),
+                    const SizedBox(height: 12),
+                    EditableFieldsCard(fields: item.editableFields),
+                  ],
+                ),
+                if (_isBusy || item.isProcessing)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.08),
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
                   ),
-                const SizedBox(height: 12),
-                EditableFieldsCard(fields: item.editableFields),
               ],
             ),
     );
