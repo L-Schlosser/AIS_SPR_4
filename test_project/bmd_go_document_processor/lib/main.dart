@@ -6,6 +6,8 @@ import 'dart:io';
 import 'services/ml_service.dart';
 import 'services/ml_service_ocr.dart';
 import 'screens/classification_results_screen.dart';
+// import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:pdfx/pdfx.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +27,10 @@ class MyApp extends StatelessWidget {
       home: const MainNavigationScreen(),
     );
   }
+}
+
+bool _isPdf(File file) {
+  return file.path.toLowerCase().endsWith('.pdf');
 }
 
 class MainNavigationScreen extends StatefulWidget {
@@ -82,7 +88,7 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePickerService _imagePickerService = ImagePickerService();
-  List<File> _selectedImages = [];  // Changed from File? to List<File>
+  List<File> _selectedFiles = [];  // Changed from File? to List<File>
   bool _isLoading = false;
 
   /// Open camera with gallery option in bottom sheet
@@ -129,7 +135,7 @@ class _UploadScreenState extends State<UploadScreen> {
         imagePickerService: _imagePickerService,
         onImagesSelected: (images) {
           setState(() {
-            _selectedImages = images;
+            _selectedFiles = images;
           });
           Navigator.pop(context);
         },
@@ -145,7 +151,7 @@ class _UploadScreenState extends State<UploadScreen> {
         source: ImageSource.gallery,
       );
       if (files.isNotEmpty) {
-        setState(() => _selectedImages = files);
+        setState(() => _selectedFiles = files);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${files.length} Bilder ausgewählt')),
         );
@@ -165,7 +171,7 @@ class _UploadScreenState extends State<UploadScreen> {
     try {
       final file = await _imagePickerService.pickDocumentFile();
       if (file != null) {
-        setState(() => _selectedImages = [file]);
+        setState(() => _selectedFiles = [file]);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Document selected successfully')),
         );
@@ -218,10 +224,10 @@ class _UploadScreenState extends State<UploadScreen> {
       final file = await _imagePickerService.takePhotoWithCamera();
       if (file != null) {
         setState(() {
-          _selectedImages.add(file);
+          _selectedFiles.add(file);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Seite ${_selectedImages.length} hinzugefügt')),
+          SnackBar(content: Text('Seite ${_selectedFiles.length} hinzugefügt')),
         );
       }
     } catch (e) {
@@ -242,7 +248,7 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       if (files.isNotEmpty) {
         setState(() {
-          _selectedImages.addAll(files);
+          _selectedFiles.addAll(files);
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${files.length} Bilder hinzugefügt')),
@@ -260,7 +266,7 @@ class _UploadScreenState extends State<UploadScreen> {
   /// Remove specific page
   void _removePage(int index) {
     setState(() {
-      _selectedImages.removeAt(index);
+      _selectedFiles.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Seite entfernt')),
@@ -269,7 +275,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
   /// Clear all images
   void _clearAllImages() {
-    setState(() => _selectedImages = []);
+    setState(() => _selectedFiles = []);
   }
 
   @override
@@ -290,7 +296,7 @@ class _UploadScreenState extends State<UploadScreen> {
                   ),
                   const SizedBox(height: 30),
 
-                  if (_selectedImages.isEmpty) ...[
+                  if (_selectedFiles.isEmpty) ...[
                     const SizedBox(height: 10),
                     const Divider(),
                     const SizedBox(height: 40),
@@ -340,7 +346,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${_selectedImages.length} Seite(n) ausgewählt',
+                                '${_selectedFiles.length} Seite(n) ausgewählt',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -356,7 +362,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  '${_selectedImages.length}',
+                                  '${_selectedFiles.length}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -377,19 +383,28 @@ class _UploadScreenState extends State<UploadScreen> {
                               mainAxisSpacing: 10,
                               childAspectRatio: 0.8,
                             ),
-                            itemCount: _selectedImages.length,
+                            itemCount: _selectedFiles.length,
                             itemBuilder: (context, index) {
+                              final doc = _selectedFiles[index];
                               return Stack(
                                 children: [
                                   Container(
                                     decoration: BoxDecoration(
-                                      border:
-                                          Border.all(color: Colors.orange),
+                                      border: Border.all(color: Colors.orange),
                                       borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(
-                                        image: FileImage(_selectedImages[index]),
-                                        fit: BoxFit.cover,
-                                      ),
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                       child: _isPdf(doc)
+                                        ? PdfViewPinch(
+                                            controller: PdfControllerPinch(
+                                              document: PdfDocument.openFile(doc.path),
+                                            ),
+                                          )
+                                        : Image.file(
+                                            doc,
+                                            fit: BoxFit.cover,
+                                          ),
                                     ),
                                   ),
                                   // Page number
@@ -464,7 +479,7 @@ class _UploadScreenState extends State<UploadScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (_selectedImages.isEmpty) ...[
+              if (_selectedFiles.isEmpty) ...[
                 Row(
                   children: [
                     Expanded(
@@ -518,7 +533,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     onPressed: _isLoading
                         ? null
                         : () {
-                            print('Classifying ${_selectedImages.length} pages...');
+                            print('Classifying ${_selectedFiles.length} pages...');
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -556,44 +571,44 @@ class _UploadScreenState extends State<UploadScreen> {
                 const SizedBox(height: 12),
 
                 // Process OCR button
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: ElevatedButton.icon(
-                //     onPressed: _isLoading
-                //         ? null
-                //         : () async {
-                //             setState(() => _isLoading = true);
-                //             final orcMlService = OCRMLService();
-                //             final ocrResult = await orcMlService.processImages(_selectedImages);
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            setState(() => _isLoading = true);
+                            final orcMlService = OCRMLService();
+                            final ocrResult = await orcMlService.processImages(_selectedFiles);
 
-                //             setState(() => _isLoading = false);
+                            setState(() => _isLoading = false);
 
-                //             // print('Classifying ${_selectedImages.length} pages...');
-                //             Navigator.push(
-                //               context,
-                //               MaterialPageRoute(
-                //                 builder: (context) => ClassificationResultsScreen(result: ocrResult),
-                //               ),
-                //             );
-                //           },
-                //     icon: _isLoading
-                //         ? const SizedBox(
-                //             width: 20,
-                //             height: 20,
-                //             child: CircularProgressIndicator(strokeWidth: 2),
-                //           )
-                //         : const Icon(Icons.smart_toy),
-                //     label: Text(
-                //       _isLoading ? 'Verarbeitung...' : 'OCR Verarbeiten',
-                //     ),
-                //     style: ElevatedButton.styleFrom(
-                //       padding: const EdgeInsets.symmetric(vertical: 15),
-                //       backgroundColor: Colors.orange,
-                //       foregroundColor: Colors.white,
-                //     ),
-                //   ),
-                // ),
-                // const SizedBox(height: 12),
+                            // print('Classifying ${_selectedFiles.length} pages...');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ClassificationResultsScreen(result: ocrResult),
+                              ),
+                            );
+                          },
+                    icon: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.smart_toy),
+                    label: Text(
+                      _isLoading ? 'Verarbeitung...' : 'OCR Verarbeiten',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
 
                 // Clear button
                 SizedBox(
