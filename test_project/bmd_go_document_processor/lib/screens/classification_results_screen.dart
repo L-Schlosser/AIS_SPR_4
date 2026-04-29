@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import '../services/ml_service.dart';
 import '../services/ml_service_ocr.dart';
 
 class ClassificationResultsScreen extends StatefulWidget {

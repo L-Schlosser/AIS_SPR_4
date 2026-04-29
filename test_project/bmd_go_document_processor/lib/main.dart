@@ -151,7 +151,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (files.isNotEmpty) {
         setState(() => _selectedFiles = files);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${files.length} Bilder ausgewählt')),
+          SnackBar(content: Text('${files.length} Bilder ausgewählt'), duration: const Duration(milliseconds: 800)),
         );
       }
     } catch (e) {
@@ -171,7 +171,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (file != null) {
         setState(() => _selectedFiles = [file]);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Document selected successfully')),
+          const SnackBar(content: Text('Document selected successfully'), duration: Duration(milliseconds: 800)),
         );
       }
     } catch (e) {
@@ -188,7 +188,7 @@ class _UploadScreenState extends State<UploadScreen> {
       _selectedFiles.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Seite entfernt')),
+      const SnackBar(content: Text('Seite entfernt'), duration: Duration(milliseconds: 800),),
     );
   }
 
