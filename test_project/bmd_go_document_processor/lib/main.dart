@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'services/image_picker_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'services/ml_service.dart';
 import 'services/ml_service_ocr.dart';
+import 'services/ml_service_classifier.dart';
 import 'screens/classification_results_screen.dart';
-// import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:pdfx/pdfx.dart';
 
 void main() {
@@ -41,12 +39,12 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
 
-  static const List<Widget> _screens = [
-    UploadScreen(),
-    //HistoryScreen(),
-  ];
+  // static const List<Widget> _screens = [
+  //   UploadScreen(),
+  //   //HistoryScreen(),
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -184,85 +182,6 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() => _isLoading = false);
     }
   }
-
-  /// Add more pages to existing document
-  // Future<void> _addMorePages() async {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Container(
-  //       padding: const EdgeInsets.all(20),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           ListTile(
-  //             leading: const Icon(Icons.camera_alt, color: Colors.orange, size: 30),
-  //             title: const Text('Weiteres Foto mit Kamera'),
-  //             onTap: () {
-  //               Navigator.pop(context);
-  //               _addPhotoFromCamera();
-  //             },
-  //           ),
-  //           const Divider(),
-  //           ListTile(
-  //             leading: const Icon(Icons.image, color: Colors.blue, size: 30),
-  //             title: const Text('Bilder aus Galerie'),
-  //             onTap: () {
-  //               Navigator.pop(context);
-  //               _addPhotosFromGallery();
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  /// Add single photo from camera
-  Future<void> _addPhotoFromCamera() async {
-    setState(() => _isLoading = true);
-    try {
-      final file = await _imagePickerService.takePhotoWithCamera();
-      if (file != null) {
-        setState(() {
-          _selectedFiles.add(file);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Seite ${_selectedFiles.length} hinzugefügt')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  /// Add multiple photos from gallery
-  Future<void> _addPhotosFromGallery() async {
-    setState(() => _isLoading = true);
-    try {
-      final files = await _imagePickerService.pickMultipleImagesForDocument(
-        source: ImageSource.gallery,
-      );
-      if (files.isNotEmpty) {
-        setState(() {
-          _selectedFiles.addAll(files);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${files.length} Bilder hinzugefügt')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
   /// Remove specific page
   void _removePage(int index) {
     setState(() {
@@ -526,28 +445,33 @@ class _UploadScreenState extends State<UploadScreen> {
                 // ),
                 // const SizedBox(height: 12),
 
-                // Process button
+                // Process OCR button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _isLoading
                         ? null
-                        : () {
-                            print('Classifying ${_selectedFiles.length} pages...');
+                        : () async {
+                            setState(() => _isLoading = true);
+                            final orcMlService = OCRMLService();
+                            String extractedText;
+                            if(_isPdf(_selectedFiles.first)){
+                              extractedText = await orcMlService.processPdf(_selectedFiles.first);
+                            } else {
+                              extractedText = await orcMlService.processImages(_selectedFiles);
+                            }
+
+                            //CLASSIFICATION
+                            print('Classifying OCR result');
+                            final classifierService = MLServiceClassifier();
+                            await classifierService.initialize();
+                            final classificationResult = await classifierService.classify(extractedText);
+
+                            setState(() => _isLoading = false);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ClassificationResultsScreen(
-                                  result: OCRClassificationResult(
-                                    documentType: 'receipt',
-                                    confidence: 0.87,
-                                    infos: {
-                                      'Datum': "01.01.2025",
-                                      'Umsatz': "100.00€",
-                                      'Produkte': "Beispielprodukt 1, Beispielprodukt 2",
-                                    },
-                                  ),
-                                ),
+                                builder: (context) => ClassificationResultsScreen(result: classificationResult),
                               ),
                             );
                           },
@@ -560,46 +484,6 @@ class _UploadScreenState extends State<UploadScreen> {
                         : const Icon(Icons.smart_toy),
                     label: Text(
                       _isLoading ? 'Verarbeitung...' : 'Verarbeiten',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Process OCR button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            setState(() => _isLoading = true);
-                            final orcMlService = OCRMLService();
-                            final ocrResult = await orcMlService.processImages(_selectedFiles);
-
-                            setState(() => _isLoading = false);
-
-                            // print('Classifying ${_selectedFiles.length} pages...');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ClassificationResultsScreen(result: ocrResult),
-                              ),
-                            );
-                          },
-                    icon: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.smart_toy),
-                    label: Text(
-                      _isLoading ? 'Verarbeitung...' : 'OCR Verarbeiten',
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -825,25 +709,25 @@ class _CameraMultiPageDialogState extends State<_CameraMultiPageDialog> {
 }
 
 // Screen 3: History
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({Key? key}) : super(key: key);
+// class HistoryScreen extends StatelessWidget {
+//   const HistoryScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.history, size: 80, color: Colors.orange),
-          const SizedBox(height: 20),
-          const Text(
-            'Processing History',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          const Text('No documents processed yet'),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           const Icon(Icons.history, size: 80, color: Colors.orange),
+//           const SizedBox(height: 20),
+//           const Text(
+//             'Processing History',
+//             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+//           ),
+//           const SizedBox(height: 20),
+//           const Text('No documents processed yet'),
+//         ],
+//       ),
+//     );
+//   }
+// }
