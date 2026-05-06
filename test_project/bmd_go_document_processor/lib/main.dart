@@ -88,6 +88,7 @@ class _UploadScreenState extends State<UploadScreen> {
   final ImagePickerService _imagePickerService = ImagePickerService();
   List<File> _selectedFiles = [];  // Changed from File? to List<File>
   bool _isLoading = false;
+  final Map<String, Future<int>> _pdfPageCountCache = {};
 
   /// Open camera with gallery option in bottom sheet
   Future<void> _openCameraWithGallery() async {
@@ -197,6 +198,31 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() => _selectedFiles = []);
   }
 
+  Future<int> _getPdfPageCount(File file) {
+    return _pdfPageCountCache.putIfAbsent(file.path, () async {
+      final document = await PdfDocument.openFile(file.path);
+      try {
+        return document.pagesCount;
+      } finally {
+        await document.close();
+      }
+    });
+  }
+
+  Future<int> _getTotalSelectedPageCount() async {
+    var total = 0;
+
+    for (final file in _selectedFiles) {
+      if (_isPdf(file)) {
+        total += await _getPdfPageCount(file);
+      } else {
+        total += 1;
+      }
+    }
+
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -261,34 +287,41 @@ class _UploadScreenState extends State<UploadScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${_selectedFiles.length} Seite(n) ausgewählt',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  '${_selectedFiles.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                          FutureBuilder<int>(
+                            future: _getTotalSelectedPageCount(),
+                            builder: (context, snapshot) {
+                              final selectedPages = snapshot.data ?? _selectedFiles.length;
+
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '$selectedPages Seite(n) ausgewählt',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '$selectedPages',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                           const SizedBox(height: 15),
                           // Thumbnail grid
@@ -326,6 +359,38 @@ class _UploadScreenState extends State<UploadScreen> {
                                           ),
                                     ),
                                   ),
+                                  if (_isPdf(doc))
+                                    Positioned(
+                                      top: 5,
+                                      right: 5,
+                                      child: FutureBuilder<int>(
+                                        future: _getPdfPageCount(doc),
+                                        builder: (context, snapshot) {
+                                          final pageCountText = snapshot.hasData
+                                              ? '${snapshot.data} Seiten'
+                                              : 'PDF';
+
+                                          return Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.blueGrey,
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              pageCountText,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   // Page number
                                   Positioned(
                                     top: 5,
