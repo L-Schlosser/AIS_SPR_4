@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../services/ml_service_ocr.dart';
+import '../utils/doc_type_translation.dart';
 
 class ClassificationResultsScreen extends StatefulWidget {
   final OCRClassificationResult result;
@@ -21,6 +22,7 @@ class _ClassificationResultsScreenState
   Widget build(BuildContext context) {
     final result = widget.result;
     final confidence = result.confidence ?? 0.0;
+    final display = docTypeDE[result.documentType.toLowerCase()] ?? result.documentType;
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +50,7 @@ class _ClassificationResultsScreenState
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      result.documentType.toUpperCase(),
+                      display.toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,

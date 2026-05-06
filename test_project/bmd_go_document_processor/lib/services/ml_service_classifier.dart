@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:onnxruntime/onnxruntime.dart';
 import 'ml_service_ocr.dart' show OCRClassificationResult;
@@ -23,7 +22,7 @@ class MLServiceClassifier {
     );
 
     _isInitialized = true;
-    print("Classifier model initialized ✔");
+    print("Classifier model initialized");
   }
 
   Future<OCRClassificationResult> classify(String extractedText) async {
