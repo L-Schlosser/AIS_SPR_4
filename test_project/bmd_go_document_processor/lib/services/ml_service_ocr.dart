@@ -34,7 +34,12 @@ class OCRMLService {
     return fullText;
   }
 
-  Future<String> processPdf(File pdfFile) async {
+  /// Process PDF by rendering pages and running OCR.
+  /// Improvements for speed:
+  /// - Cap rendered page dimensions with [maxDimension] to avoid huge images.
+  /// - Use a single `TextRecognizer` instance (already reused).
+  /// - Delete temp page files after OCR to reduce I/O pressure.
+  Future<String> processPdf(File pdfFile, {int maxDimension = 1200, double scale = 1.0}) async {
     final document = await PdfDocument.openFile(pdfFile.path);
 
     List<File> images = [];
@@ -42,10 +47,9 @@ class OCRMLService {
 
     for (int i = 1; i <= document.pagesCount; i++) {
       final page = await document.getPage(i);
-
       final pageImage = await page.render(
-        width: page.width * 2,
-        height: page.height * 2,
+        width: (page.width * scale) > maxDimension.toDouble() ? maxDimension.toDouble(): (page.width * scale),
+        height: (page.height * scale) > maxDimension.toDouble() ? maxDimension.toDouble(): (page.height * scale),
         format: PdfPageImageFormat.png,
       );
 
@@ -60,7 +64,14 @@ class OCRMLService {
     await document.close();
 
     // reuse your existing OCR
-    return await processImages(images);
+    final buffer = StringBuffer();
+    for (final file in images) {
+      final inputImage = InputImage.fromFile(file);
+      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      buffer.writeln(recognizedText.text);
+      await file.delete(); // clean up temporary file to save disk and IO
+    }
+    return buffer.toString();
   }
 
   void dispose() {
