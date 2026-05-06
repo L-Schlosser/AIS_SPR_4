@@ -1,14 +1,16 @@
-import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'dart:io';
+import 'package:pdfx/pdfx.dart';
+import 'package:path_provider/path_provider.dart';
 
 class OCRClassificationResult {
   final String documentType;
-  final double confidence;
+  final double? confidence;
   final Map<String, String> infos;
 
   OCRClassificationResult({
     required this.documentType,
-    required this.confidence,
+    this.confidence,
     required this.infos,
   });
 }
@@ -16,7 +18,7 @@ class OCRClassificationResult {
 class OCRMLService {
   final textRecognizer = TextRecognizer();
 
-  Future<OCRClassificationResult> processImages(List<File> images) async {
+  Future<String> processImages(List<File> images) async {
     String fullText = '';
 
     for (final image in images) {
@@ -29,35 +31,36 @@ class OCRMLService {
 
     print("OCR TEXT:\n$fullText");
 
-    // Extract structured data
-    final extractedData = _extractReceiptData(fullText);
-
-    return OCRClassificationResult(
-      documentType: 'receipt',
-      confidence: 0.9,
-      infos: extractedData,
-    );
+    return fullText;
   }
 
-  Map<String, String> _extractReceiptData(String text) {
-    final Map<String, String> data = {};
+  Future<String> processPdf(File pdfFile) async {
+    final document = await PdfDocument.openFile(pdfFile.path);
 
-    // VERY simple parsing (you can improve this later)
-    // final lines = text.split('\n');
+    List<File> images = [];
+    final tempDir = await getTemporaryDirectory();
 
-    // for (var line in lines) {
-    //   if (line.contains('€')) {
-    //     data['Umsatz'] = line;
-    //   }
+    for (int i = 1; i <= document.pagesCount; i++) {
+      final page = await document.getPage(i);
 
-    //   if (RegExp(r'\d{2}\.\d{2}\.\d{4}').hasMatch(line)) {
-    //     data['Datum'] = line;
-    //   }
-    // }
+      final pageImage = await page.render(
+        width: page.width * 2,
+        height: page.height * 2,
+        format: PdfPageImageFormat.png,
+      );
 
-    data['RawText'] = text;
+      final file = File('${tempDir.path}/pdf_page_$i.png');
+      await file.writeAsBytes(pageImage!.bytes);
 
-    return data;
+      images.add(file);
+
+      await page.close();
+    }
+
+    await document.close();
+
+    // reuse your existing OCR
+    return await processImages(images);
   }
 
   void dispose() {
