@@ -106,6 +106,9 @@ flutter:
     # - assets/models/gemma-2b-it-cpu-int4.bin
     - assets/models/classifier_v2.onnx
     - assets/models/doc_types.json
+    - assets/transformer/
+    - assets/models/transformer/
+    - assets/models/ner.onnx
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

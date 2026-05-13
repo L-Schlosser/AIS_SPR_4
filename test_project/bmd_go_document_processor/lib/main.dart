@@ -6,6 +6,7 @@ import 'services/ml_service_ocr.dart';
 import 'services/ml_service_classifier.dart';
 import 'screens/classification_results_screen.dart';
 import 'package:pdfx/pdfx.dart';
+import 'services/ml_service_ner.dart';
 
 void main() {
   runApp(const MyApp());
@@ -531,6 +532,16 @@ class _UploadScreenState extends State<UploadScreen> {
                             final classifierService = MLServiceClassifier();
                             await classifierService.initialize();
                             final classificationResult = await classifierService.classify(extractedText);
+
+                            print('Extract features');
+                            final nerExtractor = MLServiceNER();
+                            await nerExtractor.initialize();
+                            final extractedInfos = await nerExtractor.extract(extractedText);
+
+                            classificationResult.infos.addAll(extractedInfos.felder);
+
+                            print('Classification result: ${classificationResult.documentType}, infos: ${classificationResult.infos}');
+                            
 
                             setState(() => _isLoading = false);
                             Navigator.push(

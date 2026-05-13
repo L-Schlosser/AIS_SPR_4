@@ -1,9 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:onnxruntime/onnxruntime.dart';
 import 'ml_service_ocr.dart' show OCRClassificationResult;
+// import 'ml_service_extractor.dart' show MlServiceExtractor, ExtractedDocumentData;
 
 class MLServiceClassifier {
   late OrtSession _session;
+  // final MlServiceExtractor _extractor = MlServiceExtractor();
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -20,6 +22,8 @@ class MLServiceClassifier {
       modelData.buffer.asUint8List(),
       sessionOptions,
     );
+
+    // await _extractor.init();
 
     _isInitialized = true;
     print("Classifier model initialized");
@@ -74,11 +78,29 @@ class MLServiceClassifier {
       }
     }
 
+    // Stage 3: transformer-based extraction (summary + key facts)
+
+    // final extracted = null;
+    // print("Extracting document data...");
+    // ExtractedDocumentData? extracted = null;
+    // try {
+    //   extracted = await _extractor.extract(
+    //     ocrText: extractedText,
+    //     documentType: documentType,
+    //   );
+    // } catch (_) {
+    //   extracted = null;
+    // }
+
+    // print("Extraction completed. Extracted fields: ${extracted?.keyFacts.length ?? 0}");
+    // final extractedFields = extracted?.keyFacts ?? const <String, dynamic>{};
+
     return OCRClassificationResult(
       documentType: documentType,
       confidence: confidence,
       infos: {
-        'RawText': extractedText,
+        // if (extractedFields.isNotEmpty) ...extractedFields,
+        // if (extractedFields.isEmpty) 'RawText': extractedText,
       },
     );
   }
@@ -87,5 +109,6 @@ class MLServiceClassifier {
 
   void dispose() {
     _session.release();
+    // _extractor.dispose();
   }
 }
