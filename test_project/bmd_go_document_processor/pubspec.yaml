@@ -81,6 +81,10 @@ dependencies:
 
 # onnx runtime
   onnxruntime: ^1.4.0
+  
+## gguf stuff
+  llama_cpp_dart: ^0.2.0
+  # fllama: ^0.0.9
 
 
 
@@ -106,9 +110,11 @@ flutter:
     # - assets/models/gemma-2b-it-cpu-int4.bin
     - assets/models/classifier_v2.onnx
     - assets/models/doc_types.json
+    - assets/models/GLiNER/
     - assets/transformer/
     - assets/models/transformer/
     - assets/models/ner.onnx
+    - assets/models/qwen-q4.gguf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -6,6 +6,9 @@ import 'services/ml_service_ocr.dart';
 import 'services/ml_service_classifier.dart';
 import 'screens/classification_results_screen.dart';
 import 'package:pdfx/pdfx.dart';
+import 'services/gliner_service.dart';
+import 'services/ml_service_extractor.dart';
+import 'services/ml_service_qwen.dart';
 import 'services/ml_service_ner.dart';
 
 void main() {
@@ -533,15 +536,68 @@ class _UploadScreenState extends State<UploadScreen> {
                             await classifierService.initialize();
                             final classificationResult = await classifierService.classify(extractedText);
 
+
+//___
+                            // NER: funtkionerit!! 
+                            // print('Extract features');
+                            // final nerExtractor = MLServiceNER();
+                            // await nerExtractor.initialize();
+                            // final extractedInfos = await nerExtractor.extract(extractedText);
+                            // classificationResult.infos.addAll(extractedInfos.felder);
+//___
+
                             print('Extract features');
-                            final nerExtractor = MLServiceNER();
-                            await nerExtractor.initialize();
-                            final extractedInfos = await nerExtractor.extract(extractedText);
+                            final glinerExtractor = GLiNERService(debugModelOutput: true);
+                            await glinerExtractor.initialize();
+                            final extractedInfos = await glinerExtractor.extract(
+                              extractedText,
+                              documentType: classificationResult.documentType,
+                            );
+                            print('Extracted infos:' + extractedInfos.toString());
+                            final glinerInfos = <String, dynamic>{};
+                            for (final entity in extractedInfos) {
+                              final existing = glinerInfos[entity.label];
+                              if (existing == null) {
+                                print("existing is null");
+                                glinerInfos[entity.label] = entity.text;
+                              } else if (existing is String) {
+                                glinerInfos[entity.label] = [existing, entity.text];
+                              } else if (existing is List) {
+                                existing.add(entity.text);
+                              }
+                            }
+                            print(glinerInfos);
+                            classificationResult.infos.addAll(glinerInfos);
 
-                            classificationResult.infos.addAll(extractedInfos.felder);
+//____
+                            // print('Transformer work:');
+                            // final time = DateTime.now();
 
-                            print('Classification result: ${classificationResult.documentType}, infos: ${classificationResult.infos}');
-                            
+                            // final extractor = MlServiceExtractor();
+                            // await extractor.init();
+                            // final extracted = await extractor.extract(ocrText: extractedText, documentType: classificationResult.documentType);
+                            // classificationResult.infos.addAll(extracted.keyFacts);
+                            // extractor.dispose();
+
+                            // print('Extraction time: ${DateTime.now().difference(time).inSeconds} seconds');
+                            // print('Classification result: ${classificationResult.documentType}, infos: ${classificationResult.infos}');
+//__                            
+                            // print('Extract infos with Qwen');
+                            // final qwenExtractor = MLServiceQwen();
+                            // await qwenExtractor.initialize();
+
+                            // final docType = classificationResult.documentType;
+                            // // Run extraction
+                            // final extractedInfos = await qwenExtractor.extract(
+                            //   text: extractedText,
+                            //   category: docType,
+                            // );
+                            // // Add extracted fields to your result map
+                            // classificationResult.infos.addAll(
+                            //   extractedInfos.infos,
+                            // );
+
+//__
 
                             setState(() => _isLoading = false);
                             Navigator.push(
