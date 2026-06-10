@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 class OCRClassificationResult {
   final String documentType;
   final double? confidence;
-  final Map<String, String> infos;
+  final Map<String, dynamic> infos;
 
   OCRClassificationResult({
     required this.documentType,

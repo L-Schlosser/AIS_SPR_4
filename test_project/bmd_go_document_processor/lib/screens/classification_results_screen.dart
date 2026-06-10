@@ -61,34 +61,34 @@ class _ClassificationResultsScreenState
                 ),
               ),
               const SizedBox(height: 30),
-              if(confidence != null && confidence != 0.0) ...[
-                Text(
-                  'Confidence Score:',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 15),
+              // if(confidence != null && confidence != 0.0) ...[
+              //   Text(
+              //     'Confidence Score:',
+              //     style: Theme.of(context).textTheme.titleLarge,
+              //   ),
+              //   const SizedBox(height: 15),
               
-                LinearPercentIndicator(
-                  lineHeight: 20.0,
-                  percent: confidence,
-                  center: Text(
-                    '${(confidence * 100).toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  progressColor: Colors.green,
-                  backgroundColor: Colors.grey.shade300,
-                ),
-                const SizedBox(height: 30),
-              ] else ...[
-                const Text(
-                  'Confidence Score: Not available',
-                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-                ),
-                const SizedBox(height: 30),
-              ],
+              //   LinearPercentIndicator(
+              //     lineHeight: 20.0,
+              //     percent: confidence,
+              //     center: Text(
+              //       '${(confidence * 100).toStringAsFixed(1)}%',
+              //       style: const TextStyle(
+              //         color: Colors.white,
+              //         fontWeight: FontWeight.bold,
+              //       ),
+              //     ),
+              //     progressColor: Colors.green,
+              //     backgroundColor: Colors.grey.shade300,
+              //   ),
+              //   const SizedBox(height: 30),
+              // ] else ...[
+              //   const Text(
+              //     'Confidence Score: Not available',
+              //     style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+              //   ),
+              //   const SizedBox(height: 30),
+              // ],
               Text(
                 'Alle Informationen',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -134,12 +134,30 @@ class _ClassificationResultsScreenState
         .map(
           (entry) => Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(entry.key.replaceAll('_', ' ').toUpperCase()),
-                Text(entry.value.toString()), // '${(entry.value * 100).toStringAsFixed(1)}%'),
-              ],
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    entry.key.replaceAll('_', ' ').toUpperCase(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    entry.value.toString(),
+                    softWrap: true,
+                    maxLines: null,
+                  ),
+                ],
+              ),
             ),
           ),
         )
