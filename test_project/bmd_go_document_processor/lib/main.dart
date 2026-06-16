@@ -10,6 +10,7 @@ import 'services/gliner_service.dart';
 import 'services/ml_service_extractor.dart';
 import 'services/ml_service_qwen.dart';
 import 'services/ml_service_ner.dart';
+import 'services/ml_service_newNer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -537,39 +538,54 @@ class _UploadScreenState extends State<UploadScreen> {
                             final classificationResult = await classifierService.classify(extractedText);
 
 
-//___
-                            // NER: funtkionerit!! 
+// ___ NER - works the best
+                            // // NER: funtkionerit!! 
                             // print('Extract features');
                             // final nerExtractor = MLServiceNER();
                             // await nerExtractor.initialize();
                             // final extractedInfos = await nerExtractor.extract(extractedText);
                             // classificationResult.infos.addAll(extractedInfos.felder);
-//___
 
+//____ NER - my finetune
                             print('Extract features');
-                            final glinerExtractor = GLiNERService(debugModelOutput: true);
-                            await glinerExtractor.initialize();
-                            final extractedInfos = await glinerExtractor.extract(
-                              extractedText,
-                              documentType: classificationResult.documentType,
-                            );
-                            print('Extracted infos:' + extractedInfos.toString());
-                            final glinerInfos = <String, dynamic>{};
-                            for (final entity in extractedInfos) {
-                              final existing = glinerInfos[entity.label];
-                              if (existing == null) {
-                                print("existing is null");
-                                glinerInfos[entity.label] = entity.text;
-                              } else if (existing is String) {
-                                glinerInfos[entity.label] = [existing, entity.text];
-                              } else if (existing is List) {
-                                existing.add(entity.text);
-                              }
-                            }
-                            print(glinerInfos);
-                            classificationResult.infos.addAll(glinerInfos);
+                            final nerExtractor = MLServiceNewNER();
+                            await nerExtractor.initialize();
 
-//____
+                            // documentType from your classifier: invoice, receipt, doctor_note, ...
+                            final extractedInfos = await nerExtractor.extract(
+                              classificationResult.documentType,
+                              extractedText,
+                            );
+
+                            classificationResult.infos.addAll(extractedInfos.felder);
+
+                            nerExtractor.dispose();
+//___GLINER
+
+                            // print('Extract features');
+                            // final glinerExtractor = GLiNERService(debugModelOutput: true);
+                            // await glinerExtractor.initialize();
+                            // final extractedInfos = await glinerExtractor.extract(
+                            //   extractedText,
+                            //   documentType: classificationResult.documentType,
+                            // );
+                            // print('Extracted infos:' + extractedInfos.toString());
+                            // final glinerInfos = <String, dynamic>{};
+                            // for (final entity in extractedInfos) {
+                            //   final existing = glinerInfos[entity.label];
+                            //   if (existing == null) {
+                            //     print("existing is null");
+                            //     glinerInfos[entity.label] = entity.text;
+                            //   } else if (existing is String) {
+                            //     glinerInfos[entity.label] = [existing, entity.text];
+                            //   } else if (existing is List) {
+                            //     existing.add(entity.text);
+                            //   }
+                            // }
+                            // print(glinerInfos);
+                            // classificationResult.infos.addAll(glinerInfos);
+
+//____Transformer Extraction
                             // print('Transformer work:');
                             // final time = DateTime.now();
 
@@ -581,7 +597,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
                             // print('Extraction time: ${DateTime.now().difference(time).inSeconds} seconds');
                             // print('Classification result: ${classificationResult.documentType}, infos: ${classificationResult.infos}');
-//__                            
+//__ Qwen Extraction                           
                             // print('Extract infos with Qwen');
                             // final qwenExtractor = MLServiceQwen();
                             // await qwenExtractor.initialize();

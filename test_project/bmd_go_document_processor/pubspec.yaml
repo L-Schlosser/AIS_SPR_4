@@ -111,10 +111,12 @@ flutter:
     - assets/models/classifier_v2.onnx
     - assets/models/doc_types.json
     - assets/models/GLiNER/
-    - assets/transformer/
     - assets/models/transformer/
     - assets/models/ner.onnx
     - assets/models/qwen-q4.gguf
+    - assets/models/NER_Model/model.onnx
+    - assets/models/NER_Model/model_meta.json
+    - assets/models/NER_Model/tokenizer/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
