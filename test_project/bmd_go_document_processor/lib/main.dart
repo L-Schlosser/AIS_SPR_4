@@ -6,11 +6,11 @@ import 'services/ml_service_ocr.dart';
 import 'services/ml_service_classifier.dart';
 import 'screens/classification_results_screen.dart';
 import 'package:pdfx/pdfx.dart';
-import 'services/gliner_service.dart';
-import 'services/ml_service_extractor.dart';
-import 'services/ml_service_qwen.dart';
+// import 'services/gliner_service.dart';
+// import 'services/ml_service_extractor.dart';
+// import 'services/ml_service_qwen.dart';
+// import 'services/ml_service_ner_old.dart';
 import 'services/ml_service_ner.dart';
-import 'services/ml_service_newNer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,12 +44,6 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  // int _selectedIndex = 0;
-
-  // static const List<Widget> _screens = [
-  //   UploadScreen(),
-  //   //HistoryScreen(),
-  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,25 +53,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         centerTitle: true,
         elevation: 2,
       ),
-      body: const UploadScreen(), // _screens[_selectedIndex],
-      // bottomNavigationBar: BottomNavigationBar(
-      //   currentIndex: _selectedIndex,
-      //   onTap: (index) {
-      //     setState(() {
-      //       _selectedIndex = index;
-      //     });
-      //   },
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.upload_file),
-      //       label: 'Upload',
-      //     ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.history),
-          //   label: 'History',
-          // ),
-      //],
-      //),
+      body: const UploadScreen(),
     );
   }
 }
@@ -91,7 +67,7 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   final ImagePickerService _imagePickerService = ImagePickerService();
-  List<File> _selectedFiles = [];  // Changed from File? to List<File>
+  List<File> _selectedFiles = [];
   bool _isLoading = false;
   final Map<String, Future<int>> _pdfPageCountCache = {};
 
@@ -499,23 +475,6 @@ class _UploadScreenState extends State<UploadScreen> {
                   ],
                 ),
               ] else ...[
-                // Add more pages button
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: ElevatedButton.icon(
-                //     onPressed: _isLoading ? null : _addMorePages,
-                //     icon: const Icon(Icons.add),
-                //     label: const Text('Weitere Seite hinzufügen'),
-                //     style: ElevatedButton.styleFrom(
-                //       padding: const EdgeInsets.symmetric(vertical: 15),
-                //       backgroundColor: Colors.blue,
-                //       foregroundColor: Colors.white,
-                //     ),
-                //   ),
-                // ),
-                // const SizedBox(height: 12),
-
-                // Process OCR button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -540,22 +499,14 @@ class _UploadScreenState extends State<UploadScreen> {
                             await classifierService.initialize();
                             final classificationResult = await classifierService.classify(extractedText);
 
-                            final extraction_time = DateTime.now();                            
+                            final extraction_time = DateTime.now();       
 
-// ___ NER - works the best
-                            // // NER: funtkionerit!! 
-                            // print('Extract features');
-                            // final nerExtractor = MLServiceNER();
-                            // await nerExtractor.initialize();
-                            // final extractedInfos = await nerExtractor.extract(extractedText);
-                            // classificationResult.infos.addAll(extractedInfos.felder);
 
-//____ NER - my finetune
+                            //____ actual NER model:
                             print('Extract features');
-                            final nerExtractor = MLServiceNewNER();
+                            final nerExtractor = MLService_NER();
                             await nerExtractor.initialize();
 
-                            // documentType from your classifier: invoice, receipt, doctor_note, ...
                             final extractedInfos = await nerExtractor.extract(
                               classificationResult.documentType,
                               extractedText,
@@ -566,7 +517,16 @@ class _UploadScreenState extends State<UploadScreen> {
                             print('Classification time: ${DateTime.now().difference(classify_time).inMilliseconds} milliseconds');
                             print('Extraction time: ${DateTime.now().difference(extraction_time).inMilliseconds} milliseconds');
 
-                            nerExtractor.dispose();
+                            nerExtractor.dispose();                     
+
+// ___ NER -old one
+                            // print('Extract features');
+                            // final nerExtractor = MLServiceNER();
+                            // await nerExtractor.initialize();
+                            // final extractedInfos = await nerExtractor.extract(extractedText);
+                            // classificationResult.infos.addAll(extractedInfos.felder);
+
+
 //___GLINER
 
                             // print('Extract features');
@@ -862,27 +822,3 @@ class _CameraMultiPageDialogState extends State<_CameraMultiPageDialog> {
     );
   }
 }
-
-// Screen 3: History
-// class HistoryScreen extends StatelessWidget {
-//   const HistoryScreen({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           const Icon(Icons.history, size: 80, color: Colors.orange),
-//           const SizedBox(height: 20),
-//           const Text(
-//             'Processing History',
-//             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//           ),
-//           const SizedBox(height: 20),
-//           const Text('No documents processed yet'),
-//         ],
-//       ),
-//     );
-//   }
-// }
