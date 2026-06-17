@@ -277,6 +277,8 @@ OCR raw_text + document_type
 
 ## 5. Project structure
 
+>unzip the model.zip folder to get the onnx model
+
 ```
 ModelCreation/
 ├── config.yaml              # Single source of truth: labels, fields, hyperparams
@@ -294,6 +296,7 @@ ModelCreation/
 │   ├── pytorch/             # Fine-tuned PyTorch model + tokenizer + meta
 │   └── onnx/
 │       ├── model.onnx       # ← deployable INT8 model (copy to Flutter)
+│       ├── model.zip        # ← zip file -> to push to gitHub
 │       ├── model_meta.json  # ← labels, fields_by_type, display map (copy too)
 │       └── tokenizer/
 │           └── vocab.txt    # ← WordPiece vocabulary (copy too)
