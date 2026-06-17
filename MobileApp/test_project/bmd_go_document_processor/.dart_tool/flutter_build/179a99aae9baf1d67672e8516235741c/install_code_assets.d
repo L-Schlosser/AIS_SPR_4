@@ -1,1 +1,0 @@
- C:\\Data\\!Hagenberg\\!Hagenberg\\Semester4\\SPR\\repo\\AIS_SPR_4\\test_project\\bmd_go_document_processor\\.dart_tool\\flutter_build\\179a99aae9baf1d67672e8516235741c\\native_assets.json: 
