@@ -1,0 +1,254 @@
+# Document Information Extraction — mobile NER pipeline configuration
+
+model:
+  # German BERT base — strong German understanding, ~110 MB INT8, low latency.
+  # For maximum quality (slower, ~340 MB INT8) switch to "deepset/gbert-large".
+  base_model: "deepset/gbert-base"
+  tokenizer_cased: true
+  max_length: 384
+  fine_tune_synthetic: true
+  synthetic_epochs: 6
+  synthetic_samples_per_type: 1200
+  learning_rate: 3.0e-5
+  warmup_ratio: 0.06
+  weight_decay: 0.01
+  batch_size: 16
+  eval_ratio: 0.08
+
+# German UI labels returned to Flutter (internal field -> display key)
+field_display_de:
+  company: firma
+  customer: kunde
+  address: adresse
+  customer_address: kundenadresse
+  date: datum
+  time: uhrzeit
+  due_date: faelligkeitsdatum
+  delivery_date: lieferdatum
+  total: gesamtbetrag
+  subtotal: nettobetrag
+  vat: mwst_betrag
+  vat_rate: mwst_satz
+  currency: waehrung
+  invoice_number: rechnungsnummer
+  receipt_number: belegnummer
+  order_number: bestellnummer
+  customer_number: kundennummer
+  delivery_number: lieferscheinnummer
+  payment_method: zahlungsart
+  iban: iban
+  bic: bic
+  bank_name: bank
+  vat_id: uid
+  company_register_number: firmenbuchnummer
+  phone: telefon
+  fax: fax
+  email: email
+  website: webseite
+  contact_person: ansprechpartner
+  patient: patient
+  birth_date: geburtsdatum
+  insurer: versicherungstraeger
+  insurance_number: versicherungsnummer
+  doctor: arzt
+  doctor_address: arztadresse
+  start_date: startdatum
+  end_date: enddatum
+  issue_date: ausstellungsdatum
+  diagnosis: diagnose
+
+paths:
+  pytorch_model_dir: "models/pytorch"
+  onnx_model_dir: "models/onnx"
+  onnx_model_file: "model.onnx"
+  tokenizer_dir: "models/onnx/tokenizer"
+
+document_types:
+  - invoice
+  - receipt
+  - doctor_note
+  - care_leave
+  - delivery_note
+  - master_data
+
+fields_by_type:
+  invoice:
+    - company
+    - address
+    - vat_id
+    - customer
+    - customer_address
+    - customer_number
+    - date
+    - delivery_date
+    - due_date
+    - invoice_number
+    - order_number
+    - subtotal
+    - vat
+    - vat_rate
+    - total
+    - currency
+    - iban
+    - bic
+    - email
+    - phone
+  receipt:
+    - company
+    - address
+    - vat_id
+    - date
+    - time
+    - receipt_number
+    - subtotal
+    - vat
+    - vat_rate
+    - total
+    - currency
+    - payment_method
+    - phone
+  doctor_note:
+    - patient
+    - birth_date
+    - insurer
+    - insurance_number
+    - address
+    - doctor
+    - doctor_address
+    - start_date
+    - end_date
+    - issue_date
+    - diagnosis
+  care_leave:
+    - patient
+    - birth_date
+    - insurer
+    - insurance_number
+    - address
+    - doctor
+    - doctor_address
+    - start_date
+    - end_date
+    - issue_date
+    - diagnosis
+  delivery_note:
+    - company
+    - address
+    - customer
+    - customer_address
+    - customer_number
+    - date
+    - delivery_date
+    - delivery_number
+    - order_number
+    - vat_id
+  master_data:
+    - company
+    - address
+    - phone
+    - fax
+    - email
+    - website
+    - contact_person
+    - iban
+    - bic
+    - bank_name
+    - vat_id
+    - company_register_number
+
+labels:
+  - O
+  - B-company
+  - I-company
+  - B-customer
+  - I-customer
+  - B-address
+  - I-address
+  - B-customer_address
+  - I-customer_address
+  - B-date
+  - I-date
+  - B-time
+  - I-time
+  - B-due_date
+  - I-due_date
+  - B-delivery_date
+  - I-delivery_date
+  - B-total
+  - I-total
+  - B-subtotal
+  - I-subtotal
+  - B-vat
+  - I-vat
+  - B-vat_rate
+  - I-vat_rate
+  - B-currency
+  - I-currency
+  - B-invoice_number
+  - I-invoice_number
+  - B-receipt_number
+  - I-receipt_number
+  - B-order_number
+  - I-order_number
+  - B-customer_number
+  - I-customer_number
+  - B-delivery_number
+  - I-delivery_number
+  - B-payment_method
+  - I-payment_method
+  - B-iban
+  - I-iban
+  - B-bic
+  - I-bic
+  - B-bank_name
+  - I-bank_name
+  - B-vat_id
+  - I-vat_id
+  - B-company_register_number
+  - I-company_register_number
+  - B-phone
+  - I-phone
+  - B-fax
+  - I-fax
+  - B-email
+  - I-email
+  - B-website
+  - I-website
+  - B-contact_person
+  - I-contact_person
+  - B-patient
+  - I-patient
+  - B-birth_date
+  - I-birth_date
+  - B-insurer
+  - I-insurer
+  - B-insurance_number
+  - I-insurance_number
+  - B-doctor
+  - I-doctor
+  - B-doctor_address
+  - I-doctor_address
+  - B-start_date
+  - I-start_date
+  - B-end_date
+  - I-end_date
+  - B-issue_date
+  - I-issue_date
+  - B-diagnosis
+  - I-diagnosis
+
+onnx:
+  opset_version: 14
+  quantize_int8: true
+  dynamic_axes:
+    batch: true
+    sequence: true
+
+inference:
+  min_entity_score: 0.35
+  enable_regex_fallback: true
+
+benchmark:
+  warmup_runs: 5
+  timed_runs: 50
+  sample_text_file: null

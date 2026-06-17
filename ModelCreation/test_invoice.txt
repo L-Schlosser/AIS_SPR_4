@@ -1,0 +1,27 @@
+﻿RECHNUNG
+Elektro Köck GmbH
+4020 Linz Landstraße 42
+UID: ATU45221087
+Tel: +43 732 7788990
+E-Mail: office@koeck.at
+
+Rechnungsempfänger:
+Müller GmbH
+1100 Wien Hauptstraße 60
+Kundennummer: K-48213
+
+Rechnungsnummer: RE-2024-0815
+Rechnungsdatum: 28. 12. 2026
+Lieferdatum: 20. 12. 2026
+Bestellnummer: BST-2026-441
+
+Pos  Bezeichnung   Menge   Einzelpreis
+1    Montage       1       1.200,00
+
+Nettobetrag: 1.200,00 EUR
+Steuersatz: 20%
+MwSt-Betrag: 240,00 EUR
+Gesamtbetrag: 1.440,00 EUR
+
+Zahlbar bis 15. 01. 2027
+Bankverbindung IBAN AT611904300234573201 BIC GIBAATWWXXX

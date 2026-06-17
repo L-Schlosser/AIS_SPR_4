@@ -313,6 +313,7 @@ class MLServiceNewNER {
     for (final field in allowedFields) {
       final nerVal = bestNer[field] ?? '';
       final regexVal = nerVal.isEmpty ? _regexFallback(field, text) : '';
+      print("Field: $field, NER: '$nerVal', Regex: '$regexVal'");
       String chosen;
       if (_addressFields.contains(field)) {
         // Prefer the more complete address (NER may stop early on line breaks).
