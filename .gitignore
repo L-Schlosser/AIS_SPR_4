@@ -206,5 +206,8 @@ uv.lock
 
 
 # Models
-MobileApp/bmd_go_document_processor/assets/models/
+MobileApp/bmd_go_document_processor/assets/models/old
 *.onnx
+
+
+!MobileApp/bmd_go_document_processor/assets/models/classifier_v2.onnx

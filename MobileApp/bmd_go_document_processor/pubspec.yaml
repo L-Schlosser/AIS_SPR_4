@@ -108,7 +108,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     # - assets/models/gemma-2b-it-cpu-int4.bin
-    # - assets/models/classifier_v2.onnx
+    - assets/models/classifier_v2.onnx
     # - assets/models/doc_types.json
     # - assets/models/GLiNER/
     # - assets/models/transformer/
