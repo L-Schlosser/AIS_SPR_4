@@ -207,3 +207,4 @@ uv.lock
 
 # Models
 MobileApp/bmd_go_document_processor/assets/models/
+*.onnx
