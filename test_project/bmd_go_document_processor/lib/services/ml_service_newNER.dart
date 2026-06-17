@@ -54,14 +54,36 @@ class MLServiceNewNER {
   bool _tokenizerCased = true;
   bool _isInitialized = false;
 
-  // BERT special token ids (from vocab.txt line index)
-  static const int _padId = 0;
-  static const int _unkId = 101;
-  static const int _clsId = 102;
-  static const int _sepId = 103;
-  static const int _maxLength = 512;
+  // BERT special token ids — looked up from vocab.txt in initialize().
+  // (Hardcoding these is a bug: different BERT vocabs use different ids.)
+  int _padId = 0;
+  int _unkId = 100;
+  int _clsId = 101;
+  int _sepId = 102;
+  static const int _maxLength = 384;
   static const int _maxWordChars = 100;
   static const double _minEntityScore = 0.35;
+
+  // Fields trusted from regex over the model (mirror of entity_decoder.py).
+  static const Set<String> _regexPrimary = {
+    'date', 'issue_date', 'start_date', 'end_date', 'delivery_date', 'due_date',
+    'birth_date', 'time', 'total', 'subtotal', 'vat', 'vat_rate',
+    'invoice_number', 'receipt_number', 'order_number', 'customer_number',
+    'delivery_number', 'currency', 'email', 'phone', 'fax', 'website',
+    'iban', 'bic', 'vat_id', 'company_register_number', 'insurance_number',
+    'payment_method', 'insurer', 'bank_name',
+  };
+
+  // Address-style fields: choose the longer of NER vs regex (most complete).
+  static const Set<String> _addressFields = {
+    'address', 'customer_address', 'doctor_address',
+  };
+
+  // Fields whose captured value is a date (spaces normalised out).
+  static const Set<String> _dateFields = {
+    'date', 'issue_date', 'start_date', 'end_date', 'delivery_date',
+    'due_date', 'birth_date',
+  };
 
   static const String _modelAsset = 'assets/models/NER_Model/model.onnx';
   static const String _vocabAsset = 'assets/models/NER_Model/tokenizer/vocab.txt';
@@ -76,6 +98,12 @@ class MLServiceNewNER {
     for (final line in const LineSplitter().convert(vocabText)) {
       _vocab[line] = idx++;
     }
+
+    // Resolve special-token ids from the actual vocab (robust across models).
+    _padId = _vocab['[PAD]'] ?? 0;
+    _unkId = _vocab['[UNK]'] ?? 100;
+    _clsId = _vocab['[CLS]'] ?? 101;
+    _sepId = _vocab['[SEP]'] ?? 102;
 
     final metaJson =
         jsonDecode(await rootBundle.loadString(_metaAsset)) as Map<String, dynamic>;
@@ -204,11 +232,14 @@ class MLServiceNewNER {
       groupScores[g] = probs[best];
     }
 
-    // 7. BIO -> spans
+    // 7. BIO -> spans (tracking the averaged confidence per span)
     final spans = <NEREntitySpan>[];
+    final spanScores = <double>[];
     String? curType;
     int? curStart;
     int? curEnd;
+    double curScoreSum = 0.0;
+    int curScoreCnt = 0;
 
     void flush() {
       if (curType != null && curStart != null && curEnd != null) {
@@ -218,10 +249,13 @@ class MLServiceNewNER {
           start: curStart!,
           end: curEnd!,
         ));
+        spanScores.add(curScoreCnt > 0 ? curScoreSum / curScoreCnt : 0.0);
       }
       curType = null;
       curStart = null;
       curEnd = null;
+      curScoreSum = 0.0;
+      curScoreCnt = 0;
     }
 
     for (var g = 0; g < groupSpans.length; g++) {
@@ -238,43 +272,65 @@ class MLServiceNewNER {
         curType = tag.substring(2);
         curStart = gs.start;
         curEnd = gs.end;
+        curScoreSum = score;
+        curScoreCnt = 1;
       } else if (tag.startsWith('I-')) {
         final et = tag.substring(2);
         if (curType == et) {
           curEnd = gs.end;
+          curScoreSum += score;
+          curScoreCnt++;
         } else {
           flush();
           curType = et;
           curStart = gs.start;
           curEnd = gs.end;
+          curScoreSum = score;
+          curScoreCnt = 1;
         }
       }
     }
     flush();
 
-    // 8. Filter by document type + aggregate field map
-    final felder = <String, String>{};
-    for (final span in spans) {
-      if (!allowedFields.contains(span.type)) continue;
-      if (felder.containsKey(span.type)) {
-        felder[span.type] = '${felder[span.type]!} ${span.text}';
-      } else {
-        felder[span.type] = span.text;
+    // 8. Best NER span per field (highest score, then longest) — never concat.
+    final bestNer = <String, String>{};
+    final bestNerScore = <String, double>{};
+    for (var i = 0; i < spans.length; i++) {
+      final s = spans[i];
+      if (!allowedFields.contains(s.type)) continue;
+      final sc = spanScores[i];
+      final prev = bestNerScore[s.type];
+      if (prev == null ||
+          sc > prev ||
+          (sc == prev && s.text.length > (bestNer[s.type]?.length ?? 0))) {
+        bestNer[s.type] = _clean(s.text);
+        bestNerScore[s.type] = sc;
       }
     }
 
-    // 9. Regex fallbacks for missing fields (mirrors entity_decoder.py)
+    // 9. Merge NER + regex per field (regex-primary for deterministic fields).
+    final felder = <String, String>{};
     for (final field in allowedFields) {
-      if (felder.containsKey(field) && felder[field]!.isNotEmpty){
-        print("Found $field from model: ${felder[field]}");
-        continue;
+      final nerVal = bestNer[field] ?? '';
+      final regexVal = nerVal.isEmpty ? _regexFallback(field, text) : '';
+      String chosen;
+      if (_addressFields.contains(field)) {
+        // Prefer the more complete address (NER may stop early on line breaks).
+        chosen = regexVal.length > nerVal.length ? regexVal : nerVal;
+      } else if (_regexPrimary.contains(field)) {
+        chosen = regexVal.isNotEmpty ? regexVal : nerVal;
+      } else {
+        chosen = nerVal.isNotEmpty ? nerVal : regexVal;
       }
-      print("regexFallback!");
-      final value = _regexFallback(field, text);
-      print("regexFallback field: $field, value: $value");
-      if (value.isNotEmpty) {
-        felder[field] = value;
+      if (chosen.isEmpty) continue;
+      if (field == 'total' || field == 'subtotal' || field == 'vat') {
+        chosen = _normalizeAmount(chosen);
+      } else if (_dateFields.contains(field)) {
+        chosen = _normalizeDate(chosen);
+      } else if (field == 'currency' && chosen == '€') {
+        chosen = 'EUR';
       }
+      felder[field] = chosen;
     }
 
     // 10. Map internal keys -> German display keys for UI
@@ -292,28 +348,67 @@ class MLServiceNewNER {
     );
   }
 
+  String _clean(String value) {
+    var v = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+    v = v.replaceAll(RegExp(r'^[.,:;\-]+|[.,:;\-]+$'), '').trim();
+    return v;
+  }
+
+  String _normalizeAmount(String value) {
+    var v = value.replaceAll(' ', '');
+    if (v.contains(',')) {
+      v = v.replaceAll('.', '').replaceAll(',', '.');
+    }
+    return v;
+  }
+
+  String _normalizeDate(String value) {
+    // 28. 12. 2026 -> 28.12.2026 (strip spaces around separators).
+    return value
+        .replaceAllMapped(RegExp(r'\s*([./\-])\s*'), (m) => m.group(1)!)
+        .trim();
+  }
+
   static const Map<String, String> _defaultFieldDisplayDe = {
     'company': 'firma',
+    'customer': 'kunde',
     'address': 'adresse',
+    'customer_address': 'kundenadresse',
     'date': 'datum',
+    'time': 'uhrzeit',
+    'due_date': 'faelligkeitsdatum',
+    'delivery_date': 'lieferdatum',
     'total': 'gesamtbetrag',
-    'subtotal': 'zwischensumme',
+    'subtotal': 'nettobetrag',
     'vat': 'mwst_betrag',
-    'invoice_number': 'rechnungsnummer',
+    'vat_rate': 'mwst_satz',
     'currency': 'waehrung',
+    'invoice_number': 'rechnungsnummer',
+    'receipt_number': 'belegnummer',
+    'order_number': 'bestellnummer',
+    'customer_number': 'kundennummer',
+    'delivery_number': 'lieferscheinnummer',
+    'payment_method': 'zahlungsart',
+    'iban': 'iban',
+    'bic': 'bic',
+    'bank_name': 'bank',
+    'vat_id': 'uid',
+    'company_register_number': 'firmenbuchnummer',
+    'phone': 'telefon',
+    'fax': 'fax',
+    'email': 'email',
+    'website': 'webseite',
+    'contact_person': 'ansprechpartner',
     'patient': 'patient',
+    'birth_date': 'geburtsdatum',
+    'insurer': 'versicherungstraeger',
+    'insurance_number': 'versicherungsnummer',
     'doctor': 'arzt',
+    'doctor_address': 'arztadresse',
     'start_date': 'startdatum',
     'end_date': 'enddatum',
     'issue_date': 'ausstellungsdatum',
     'diagnosis': 'diagnose',
-    'delivery_date': 'lieferdatum',
-    'delivery_number': 'lieferscheinnummer',
-    'customer': 'kunde',
-    'phone': 'telefon',
-    'email': 'email',
-    'iban': 'iban',
-    'vat_id': 'uid',
   };
 
   bool get isInitialized => _isInitialized;
@@ -443,103 +538,202 @@ class MLServiceNewNER {
   // Regex fallbacks (optional safety net, same idea as Python entity_decoder)
   // ---------------------------------------------------------------------------
 
-  String _regexFallback(String field, String text) {
-    const datePat =
-        r'(\d{1,2}[./\-]\d{1,2}[./\-]\d{2,4}|\d{4}[./\-]\d{1,2}[./\-]\d{1,2})';
-    const amountPat = r'([\d]{1,3}(?:[.,]\d{3})*[.,]\d{2}|\d+[.,]\d{2})';
+  // Dates allow optional spaces around separators (OCR: "28. 12. 2026").
+  static const String _datePat =
+      r'(\d{1,2}\s*[./\-]\s*\d{1,2}\s*[./\-]\s*\d{2,4})';
+  static const String _amountPat =
+      r'(\d{1,3}(?:[.\s]\d{3})*[,.]\d{2}|\d+[,.]\d{2})';
+  static const String _ratePat = r'(\d{1,2}\s*%)';
 
-    RegExp? pattern;
+  // Reusable umlaut character-class fragments.
+  static const String _u = '\u00c4\u00d6\u00dc'; // ÄÖÜ
+  static const String _l = '\u00e4\u00f6\u00fc\u00df'; // äöüß
+
+  /// Ordered German/Austrian patterns per field — first match wins.
+  /// Mirrors entity_decoder.py `_PATTERNS`.
+  List<RegExp> _patternsFor(String field) {
+    RegExp r(String p) => RegExp(p, caseSensitive: false, dotAll: true);
     switch (field) {
       case 'date':
+        return [r('(?:rechnungsdatum|belegdatum|datum)\\s*[:/]?\\s*$_datePat')];
       case 'issue_date':
-        pattern = RegExp(
-          '(?:datum|rechnungsdatum|ausstellungsdatum)\\s*:?\\s*$datePat',
-          caseSensitive: false,
-        );
-        final m = pattern.firstMatch(text);
-        if (m != null) return m.group(1) ?? '';
-        pattern = RegExp('\\b$datePat\\b');
-        break;
+        return [
+          r('ausstellungsdatum\\s*[:/]?\\s*$_datePat'),
+          r('ausgestellt\\s*am\\s*[:/]?\\s*$_datePat'),
+        ];
       case 'start_date':
-        pattern = RegExp('(?:from|ab|vom)\\s+$datePat', caseSensitive: false);
-        break;
+        return [
+          r('arbeitsunf[${_l}a]hig\\s*von\\s*[:/]?\\s*$_datePat'),
+          r('pflege(?:freistellung)?\\s*(?:notwendig\\s*)?von\\s*[:/]?\\s*$_datePat'),
+          r('\\bab\\s+$_datePat'),
+        ];
       case 'end_date':
-        pattern = RegExp('(?:until|to|bis)\\s+$datePat', caseSensitive: false);
-        break;
+        return [
+          r('letzter\\s*tag\\s*der\\s*.{0,40}?arbeitsunf[${_l}a]higkeit\\s*[:/]?\\s*$_datePat'),
+          r('\\bbis\\s+$_datePat'),
+          r('voraussichtliches?\\s*ende\\s*.{0,40}?$_datePat'),
+        ];
       case 'delivery_date':
-        pattern = RegExp('(?:lieferdatum)\\s*:?\\s*$datePat', caseSensitive: false);
-        break;
+        return [r('lieferdatum\\s*(?:/\\s*date)?\\s*[:/]?\\s*$_datePat')];
+      case 'due_date':
+        return [
+          r('(?:zahlbar\\s*bis|f[${_l}a]llig(?:keitsdatum)?(?:\\s*am)?|zahlungsziel)\\s*[:/]?\\s*$_datePat'),
+        ];
+      case 'birth_date':
+        return [
+          r('(?:geburtsdatum|geboren\\s*am|geb\\.?)\\s*[:/]?\\s*$_datePat'),
+        ];
+      case 'time':
+        return [r('(?:uhrzeit|zeit)\\s*[:.]?\\s*(\\d{1,2}[:.]\\d{2})')];
       case 'total':
-        pattern = RegExp('Summe\\s+EUR\\s+$amountPat', caseSensitive: false);
-        final m = pattern.firstMatch(text);
-        if (m != null) return (m.group(1) ?? '').replaceAll(',', '.');
-        pattern = RegExp(
-          '(?:summe|gesamt|gesamtbetrag|bezahlt)\\s*(?:EUR\\s*)?$amountPat',
-          caseSensitive: false,
-          dotAll: true,
-        );
-        break;
+        return [
+          r('(?:gesamtbetrag|rechnungsbetrag|zu\\s*zahlen)\\s*[:.]?\\s*(?:EUR\\s*)?$_amountPat'),
+          r('summe\\s+EUR\\s+$_amountPat'),
+          r('(?:gesamt|summe|total|bezahlt|gegeben)\\s*[:.]?\\s*(?:EUR\\s*)?$_amountPat'),
+        ];
       case 'subtotal':
-        pattern = RegExp(
-          '(?:zwischensumme|nettobetrag|netto)\\s*:?\\s*$amountPat',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('(?:zwischensumme|nettobetrag|netto|entgelt)\\s*[:.]?\\s*(?:EUR\\s*)?$_amountPat'),
+        ];
       case 'vat':
-        pattern = RegExp(
-          '(?:mwst|ust|vat)\\s*(?:betrag)?\\s*(?:von\\s+$amountPat\\s*=\\s*)?($amountPat)',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('(?:mwst|ust|umsatzsteuer)\\s*(?:\\d{1,2}\\s*%)?\\s*von\\s+$_amountPat\\s*=\\s*$_amountPat'),
+          r('(?:mwst|ust|umsatzsteuer|vat)(?:-?\\s*betrag)?\\s*(?:\\d{1,2}\\s*%)?\\s*[:.=]?\\s*(?:EUR\\s*)?$_amountPat'),
+        ];
+      case 'vat_rate':
+        return [
+          r('(?:steuersatz|mwst-?satz|ust-?satz)\\s*[:.]?\\s*$_ratePat'),
+          r('(?:mwst|ust|umsatzsteuer)\\s*[:.]?\\s*$_ratePat'),
+          r('$_ratePat\\s*(?:mwst|ust)'),
+        ];
       case 'invoice_number':
-        pattern = RegExp(
-          '(?:beleg\\s*nr\\.?|re-nr\\.?|rechnungsnummer|bon-nr)\\s*:?\\s*([\\w./-]{3,30})',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('(?:rechnungs-?\\s*nr|rechnungsnummer|re-?nr)\\.?\\s*[:.]?\\s*([A-Za-z0-9][\\w./\\-]{2,28})'),
+        ];
+      case 'receipt_number':
+        return [
+          r('(?:beleg-?\\s*nr|beleg\\s*nr|bon-?nr|kassenbon\\s*nr)\\.?\\s*[:.]?\\s*([A-Za-z0-9][\\w./\\-]{2,28})'),
+        ];
+      case 'order_number':
+        return [
+          r('(?:bestellnummer|bestell-?nr|auftragsnummer|auftrags-?nr)\\.?\\s*[:.]?\\s*([A-Za-z0-9][\\w./\\-]{2,28})'),
+        ];
+      case 'customer_number':
+        return [
+          r('(?:kundennummer|kunden-?nr|kd-?nr)\\.?\\s*[:.]?\\s*([A-Za-z0-9][\\w./\\-]{2,28})'),
+        ];
       case 'delivery_number':
-        pattern = RegExp(
-          '(?:lieferschein|ls[\\s.#-]*)\\s*:?\\s*([A-Z0-9][\\w./-]{2,20})',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('(?:lieferschein-?\\s*nr|lieferschein\\s*nr|lieferschein|ls)\\.?\\s*[:.#]?\\s*([A-Za-z0-9][\\w./\\-]{2,24})'),
+        ];
       case 'currency':
-        pattern = RegExp(r'\b(EUR|USD|GBP|CHF)\b');
-        break;
+        return [r('\\b(EUR|USD|GBP|CHF|\u20ac)\\b')];
+      case 'payment_method':
+        return [
+          r('\\b(MasterCard|Maestro|Bankomat|Kreditkarte|EC-Karte|\u00dcberweisung|PayLife|Visa|Bar)\\b'),
+        ];
       case 'email':
-        pattern = RegExp(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b');
-        break;
+        return [r('([A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,})')];
       case 'phone':
-        pattern = RegExp(
-          r'(?:TEL|Tel|Telefon)\s*:?\s*([+\d][\d\s./-]{6,20})',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('(?:tel\\.?|telefon|fon)\\s*[:.]?\\s*((?:\\+?\\d[\\d\\s./\\-]{6,20}\\d))'),
+        ];
+      case 'fax':
+        return [
+          r('(?:fax|telefax)\\s*[:.]?\\s*((?:\\+?\\d[\\d\\s./\\-]{6,20}\\d))'),
+        ];
+      case 'website':
+        return [r('\\b((?:https?://)?www\\.[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,})\\b')];
       case 'iban':
-        pattern = RegExp(r'\b(AT\d{18,20}|DE\d{20,22}|[A-Z]{2}\d{2}[A-Z0-9]{11,30})\b');
-        break;
+        return [r('\\b(AT\\d{2}(?:\\s?\\d{4}){4}|AT\\d{18}|DE\\d{20})\\b')];
+      case 'bic':
+        return [
+          r('(?:bic|swift)\\s*[:.]?\\s*([A-Z]{4}[A-Z]{2}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)'),
+          r('\\b([A-Z]{4}AT[A-Z0-9]{2}(?:[A-Z0-9]{3})?)\\b'),
+        ];
+      case 'bank_name':
+        return [
+          r('\\b(Raiffeisenlandesbank|Raiffeisenbank|Erste\\s*Bank|BAWAG\\s*P\\.?S\\.?K\\.?|Bank\\s*Austria|Sparkasse|Volksbank|Oberbank|Hypo\\s*Tirol\\s*Bank)\\b'),
+          r('(?:bank|kreditinstitut)\\s*[:.]?\\s*([A-Z$_u][\\w$_u$_l.\\- ]{2,28}?)(?:\\n|\$)'),
+        ];
       case 'vat_id':
-        pattern = RegExp(
-          r'\b((?:ATU|UID|UST[\s.-]?ID)\s*[\dA-Z]{6,14})\b',
-          caseSensitive: false,
-        );
-        break;
+        return [
+          r('\\b(ATU\\s?\\d{8})\\b'),
+          r('(?:uid(?:-?nr)?|ust-?id)\\.?\\s*[:.]?\\s*(ATU?\\s?\\d{6,9})'),
+        ];
+      case 'company_register_number':
+        return [
+          r('(?:firmenbuchnummer|firmenbuch-?nr)\\.?\\s*[:.]?\\s*(FN\\s?\\d{4,7}\\s?[a-z]?)'),
+          r('\\b(FN\\s?\\d{4,7}\\s?[a-z]?)\\b'),
+        ];
+      case 'insurance_number':
+        return [
+          r('(?:versicherungsnummer|sv-?nr|svnr)\\s*[:.]?\\s*\\n*\\s*(\\d{4}\\s*\\d{2}\\s*\\d{2}\\s*\\d{2})'),
+          r('\\b(\\d{4}\\s\\d{2}\\s\\d{2}\\s\\d{2})\\b'),
+        ];
+      case 'insurer':
+        const region =
+            r'(?:\s+(?:Wien|Nieder[\u00f6o]sterreich|Ober[\u00f6o]sterreich|Steiermark|Tirol|K[\u00e4a]rnten|Salzburg|Vorarlberg|Burgenland))?';
+        return [
+          r('(?:versicherungstr[${_l}a]ger|kasse)\\s*[:.]?\\s*((?:\u00d6GK|SVS|BVAEB|KFA)$region)'),
+          r('\\b((?:\u00d6GK|SVS|BVAEB|KFA)$region)\\b'),
+        ];
+      case 'patient':
+        return [
+          r('familienname,?\\s*vorname\\(?n?\\)?\\s*[:]?\\s*\\n*\\s*([A-Z$_u][\\w$_l]+\\s+[A-Z$_u][\\w$_l]+)'),
+          r('(?:patient(?:/in|in)?|name\\s*der/des\\s*erkrankten|erkrankte\\s*person)\\s*[:]?\\s*([A-Z$_u][\\w$_l]+\\s+[A-Z$_u][\\w$_l]+)'),
+        ];
+      case 'doctor':
+        return [
+          r('((?:Univ\\.-Prof\\.\\s*)?Dr\\.?(?:\\s*med\\.?)?\\s+[A-Z$_u][\\w$_l]+(?:\\s*&\\s*Dr\\.?\\s+[A-Z$_u][\\w$_l]+)?)'),
+        ];
+      case 'diagnosis':
+        return [
+          r('(?:diagnose|befund|grund)\\s*[:]?\\s*([A-Z$_u][\\w$_l/\\- ]{2,40}?)(?:\\n|\$)'),
+          r('\\b(Krankheit/Unfall|Berufskrankheit|Krankheit|Unfall)\\b'),
+        ];
       case 'company':
-        pattern = RegExp(
-          r'\b([A-ZÄÖÜ][\wÄÖÜäöüß.&-]+(?:\s+(?:AG|GmbH|KG|OG|e\.U\.|GesmbH))+)\b',
-        );
-        break;
+        return [
+          r('([A-Z$_u][\\w$_u$_l.\\-]*(?:\\s+[A-Z$_u&][\\w$_u$_l.\\-]*){0,3}\\s+(?:AG|GmbH|GesmbH|KG|OG|e\\.U\\.|GmbH\\s*&\\s*Co\\s*KG))'),
+        ];
+      case 'customer':
+        return [
+          r('(?:empf[${_l}a]nger|kunde|rechnungsempf[${_l}a]nger)\\s*[:]?\\s*\\n*\\s*([A-Z$_u][\\w$_u$_l.&\\-]+(?:\\s+[A-Z$_u&][\\w$_u$_l.\\-]+){0,3})'),
+        ];
+      case 'contact_person':
+        return [
+          r('(?:ansprechpartner|kontaktperson|kontakt)\\s*[:]?\\s*([A-Z$_u][\\w$_l]+\\s+[A-Z$_u][\\w$_l]+)'),
+        ];
       case 'address':
-        pattern = RegExp(
-          r'\b(\d{4}\s+[A-ZÄÖÜ][A-ZÄÖÜa-zäöüß\s.-]+(?:\d{1,4})?)\b',
-        );
-        break;
+      case 'customer_address':
+      case 'doctor_address':
+        return [
+          r('\\b(\\d{4}\\s+[A-Z$_u][A-Za-z$_u$_l.\\-]+(?:\\s+[A-Z$_u][A-Za-z$_u$_l.\\-]+)*\\s+\\d{1,4})'),
+          r('\\b(\\d{4}\\s+[A-Z$_u][A-Za-z$_u$_l.\\- ]{3,40})'),
+        ];
+      default:
+        return const [];
     }
-    if (pattern == null) return '';
-    final m = pattern.firstMatch(text);
-    if (m == null) return '';
-    final val = (m.groupCount >= 1 ? m.group(1) : m.group(0)) ?? '';
-    return field == 'total' ? val.replaceAll(',', '.') : val;
+  }
+
+  String _regexFallback(String field, String text) {
+    for (final pattern in _patternsFor(field)) {
+      final m = pattern.firstMatch(text);
+      if (m == null) continue;
+      // Use the last captured group (mirrors Python m.group(m.lastindex)).
+      String? val;
+      for (var g = m.groupCount; g >= 1; g--) {
+        final cand = m.group(g);
+        if (cand != null && cand.isNotEmpty) {
+          val = cand;
+          break;
+        }
+      }
+      val ??= m.group(0);
+      final cleaned = _clean(val ?? '');
+      if (cleaned.isNotEmpty) return cleaned;
+    }
+    return '';
   }
 }
 
@@ -565,36 +759,3 @@ class _GroupSpan {
   int end;
   _GroupSpan(this.start, this.end);
 }
-
-// -----------------------------------------------------------------------------
-// USAGE EXAMPLE — copy into your scan/classification flow:
-//
-//   print('Extract features');
-//   final nerExtractor = MLServiceNewNER();
-//   await nerExtractor.initialize();
-//
-//   // documentType comes from your existing classifier, e.g. "invoice"
-//   final extractedInfos = await nerExtractor.extract(
-//     classificationResult.documentType,  // "invoice" | "receipt" | ...
-//     extractedText,
-//   );
-//
-//   classificationResult.infos.addAll(extractedInfos.felder);
-//
-//   // Example felder for receipt (German UI keys):
-//   // {
-//   //   "firma": "Billa AG",
-//   //   "adresse": "1010 WIEN FRANZ JOSEFS KAI 29",
-//   //   "datum": "28.09.2022",
-//   //   "gesamtbetrag": "8.84",
-//   //   "waehrung": "EUR"
-//   // }
-//
-//   nerExtractor.dispose();
-//
-// pubspec.yaml assets:
-//   assets:
-//     - assets/models/NER_Model/model.onnx
-//     - assets/models/NER_Model/model_meta.json
-//     - assets/models/NER_Model/tokenizer/vocab.txt
-// -----------------------------------------------------------------------------
