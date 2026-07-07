@@ -513,8 +513,8 @@ class _UploadScreenState extends State<UploadScreen> {
                             );
 
                             classificationResult.infos.addAll(extractedInfos.felder);
-                            print('OCR time: ${DateTime.now().difference(ocr_time).inMilliseconds} milliseconds');
-                            print('Classification time: ${DateTime.now().difference(classify_time).inMilliseconds} milliseconds');
+                            print('OCR time: ${classify_time.difference(ocr_time).inMilliseconds} milliseconds');
+                            print('Classification time: ${extraction_time.difference(classify_time).inMilliseconds} milliseconds');
                             print('Extraction time: ${DateTime.now().difference(extraction_time).inMilliseconds} milliseconds');
 
                             nerExtractor.dispose();                     
